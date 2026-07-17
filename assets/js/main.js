@@ -22,19 +22,50 @@
   const navToggle = document.querySelector('.nav-toggle');
   const navLinks = document.querySelector('.nav-links');
   if (navToggle && navLinks) {
-    navToggle.addEventListener('click', () => {
-      const open = navLinks.classList.toggle('is-open');
+    // Plain `overflow:hidden` on <body> is well known to not reliably stop
+    // background touch-scroll on iOS Safari. Pinning the body in place with
+    // position:fixed and restoring the exact scroll offset on close is the
+    // standard cross-browser-safe way to lock scroll behind an open menu.
+    let lockedScrollY = 0;
+
+    const lockScroll = () => {
+      lockedScrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${lockedScrollY}px`;
+      document.body.style.width = '100%';
+    };
+    const unlockScroll = () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, lockedScrollY);
+    };
+
+    const setOpen = (open) => {
+      // Reading the current state directly off the element (rather than
+      // trusting a variable) means rapid/duplicate clicks can't desync the
+      // toggle from what's actually on screen.
+      if (open === navLinks.classList.contains('is-open')) return;
+      navLinks.classList.toggle('is-open', open);
       navToggle.setAttribute('aria-expanded', String(open));
       navToggle.textContent = open ? 'Close' : 'Menu';
-      document.body.style.overflow = open ? 'hidden' : '';
+      if (open) lockScroll(); else unlockScroll();
+    };
+
+    navToggle.addEventListener('click', () => {
+      setOpen(!navLinks.classList.contains('is-open'));
     });
     navLinks.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => {
-        navLinks.classList.remove('is-open');
-        navToggle.setAttribute('aria-expanded', 'false');
-        navToggle.textContent = 'Menu';
-        document.body.style.overflow = '';
-      });
+      link.addEventListener('click', () => setOpen(false));
+    });
+    // Esc closes the menu, and resizing past the mobile breakpoint (e.g.
+    // rotating a tablet to landscape) shouldn't leave scroll locked behind
+    // a menu that CSS has now hidden.
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') setOpen(false);
+    });
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1400) setOpen(false);
     });
   }
 

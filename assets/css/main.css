@@ -36,7 +36,7 @@
 
 *, *::before, *::after{ box-sizing: border-box; }
 
-html{ scroll-behavior: smooth; }
+html{ scroll-behavior: smooth; overflow-x: hidden; }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior: auto; }
   *, *::before, *::after{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
@@ -44,6 +44,9 @@ html{ scroll-behavior: smooth; }
 
 body{
   margin: 0;
+  overflow-x: hidden; /* decorative elements (hero float badges, frame corners) use
+     negative offsets; this keeps a stray offset from ever opening a horizontal
+     scrollbar on narrow screens instead of silently disturbing the layout */
   background: var(--void);
   color: var(--ink);
   font-family: var(--font-body);
@@ -216,8 +219,36 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 .nav-toggle{ display: none; }
 
 @media (max-width: 1400px){
-  .nav-links{ display: none; }
-  .nav-toggle{ display: inline-flex; }
+  .nav-links{
+    display: none; /* simplest possible base state: fully removed until opened */
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,5,0.98);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 100px 32px 40px;
+    z-index: 9999;
+    overflow-y: auto;
+  }
+  .nav-links.is-open{
+    display: flex;
+    animation: nav-menu-in .25s var(--ease);
+  }
+  .nav-links li{ border-bottom: 1px solid var(--panel-line); }
+  .nav-links a{ display: block; padding: 18px 0; font-size: 1.05rem; color: var(--ink); }
+  .nav-links a::after{ display: none; }
+  .nav-toggle{ display: inline-flex; position: relative; z-index: 10000; }
+  .nav-cta .btn-ghost{ display: none; }
+}
+
+@keyframes nav-menu-in{
+  from{ opacity: 0; transform: translateY(-16px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){
+  .nav-links.is-open{ animation: none; }
 }
 
 /* ==========================================================================
@@ -1207,6 +1238,17 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 .cta-band .btn{ flex-shrink: 0; }
 
 /* ==========================================================================
+   Grid column-count modifiers
+   Use these instead of an inline style="grid-template-columns:..." — an
+   inline style always wins over a stylesheet rule regardless of specificity,
+   which silently defeats every responsive breakpoint below for that element.
+   A class has normal, overridable specificity, so it plays nicely with them.
+   ========================================================================== */
+
+.cols-2{ grid-template-columns: repeat(2, 1fr); }
+.cols-3{ grid-template-columns: repeat(3, 1fr); }
+
+/* ==========================================================================
    Responsive
    ========================================================================== */
 
@@ -1230,25 +1272,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 }
 
 @media (max-width: 760px){
-  .nav-links{
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(5,5,5,0.98);
-    backdrop-filter: blur(20px);
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    padding: 100px 32px 40px;
-    z-index: 99;
-    overflow-y: auto;
-  }
-  .nav-links.is-open{ display: flex; }
-  .nav-links li{ border-bottom: 1px solid var(--panel-line); }
-  .nav-links a{ display: block; padding: 18px 0; font-size: 1.05rem; color: var(--ink); }
-  .nav-links a::after{ display: none; }
-  .nav-toggle{ display: block; position: relative; z-index: 101; }
-  .nav-cta .btn-ghost{ display: none; }
   .brand-logo, .nav.is-scrolled .brand-logo{ height: 22px; }
   .hero{ padding-top: 120px; }
   .hero-frame{ display: none; }
@@ -1271,4 +1294,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   .office-card{ flex-direction: column; gap: 8px; }
   .page-header{ padding: 140px 0 56px; }
   .cta-band{ flex-direction: column; align-items: flex-start; text-align: left; padding: 32px; }
+}
+
+/* Smallest phones (320–480px): the breakpoints above already fix column
+   counts; these tighten spacing/type on a few dense components so nothing
+   feels cramped once there's this little width left to work with. */
+@media (max-width: 480px){
+  .container{ padding: 0 20px; }
+  .hero-panel{ padding: 18px; }
+  .hero-panel-price{ font-size: 0.92rem; }
+  .hero-panel-foot{ gap: 8px; font-size: 0.62rem; }
+  .hero-panel-foot b{ font-size: 0.74rem; }
+  .leaderboard-row{
+    grid-template-columns: 1.6fr 0.8fr 1fr 0.7fr;
+    padding: 14px 16px;
+    font-size: 0.76rem;
+    gap: 6px;
+  }
+  .risk-dots{ gap: 3px; }
+  .risk-dots span{ width: 5px; height: 5px; }
+  .newsletter{ padding: 28px 18px; }
+  .promo-card, .detail-card{ padding: 22px; }
+  .testimonial{ padding: 24px; }
+  .footer-risk{ font-size: 0.72rem; }
 }
