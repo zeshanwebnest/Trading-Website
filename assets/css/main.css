@@ -218,6 +218,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 .nav-cta{ display: flex; align-items: center; gap: 16px; flex-shrink: 0; }
 .nav-toggle{ display: none; }
 
+/* Visually-hidden but still focusable/keyboard-operable checkbox that drives
+   the mobile menu — a native <label for> + <input type="checkbox"> pair
+   opens/closes with zero JavaScript, so a script failing to load or erroring
+   out can never leave the toggle button non-functional. main.js only adds
+   polish on top (scroll lock, Esc to close, auto-close on resize). */
+.nav-check{
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 @media (max-width: 1400px){
   .nav-links{
     display: none; /* simplest possible base state: fully removed until opened */
@@ -232,14 +248,22 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
     z-index: 9999;
     overflow-y: auto;
   }
-  .nav-links.is-open{
+  .nav-check:checked ~ .nav-links{
     display: flex;
     animation: nav-menu-in .25s var(--ease);
   }
   .nav-links li{ border-bottom: 1px solid var(--panel-line); }
   .nav-links a{ display: block; padding: 18px 0; font-size: 1.05rem; color: var(--ink); }
   .nav-links a::after{ display: none; }
-  .nav-toggle{ display: inline-flex; position: relative; z-index: 10000; }
+  .nav-toggle{
+    display: inline-flex;
+    position: relative;
+    z-index: 10000;
+    cursor: pointer;
+  }
+  .nav-toggle::before{ content: "Menu"; }
+  .nav-check:checked ~ .nav-toggle::before{ content: "Close"; }
+  .nav-check:focus-visible ~ .nav-toggle{ outline: 2px solid var(--gold); outline-offset: 3px; }
   .nav-cta .btn-ghost{ display: none; }
 }
 
@@ -248,8 +272,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   to{ opacity: 1; transform: translateY(0); }
 }
 @media (prefers-reduced-motion: reduce){
-  .nav-links.is-open{ animation: none; }
+  .nav-check:checked ~ .nav-links{ animation: none; }
 }
+
+/* Baseline scroll lock the moment the menu opens, independent of JS —
+   main.js applies the more iOS-Safari-safe position:fixed technique on top
+   when it's available, but the page is never left scrollable-behind-the-menu
+   if JS hasn't run yet. */
+body:has(.nav-check:checked){ overflow: hidden; }
 
 /* ==========================================================================
    Hero
@@ -510,6 +540,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 }
 
 /* ==========================================================================
+   Trust indicators (Why Choose Us strip)
+   ========================================================================== */
+
+.trust-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap-lg) var(--gap-md);
+}
+.trust-card{
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+.trust-icon{
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--gold-line);
+  border-radius: 50%;
+  background: var(--gold-wash);
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  transition: border-color .3s, transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.trust-icon svg{ width: 24px; height: 24px; }
+.trust-card:hover .trust-icon{
+  border-color: var(--gold-dim);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px -12px rgba(212,175,55,0.45);
+}
+.trust-card h3{ font-size: 1rem; margin-bottom: 6px; }
+.trust-card p{ font-size: 0.85rem; }
+
+/* ==========================================================================
    Instruments
    ========================================================================== */
 
@@ -728,77 +793,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   letter-spacing: 0.1em;
   text-align: center;
 }
-
-/* ==========================================================================
-   Copy trading
-   ========================================================================== */
-
-.copy-wrap{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--gap-xl);
-  align-items: center;
-}
-.leaderboard{
-  background: var(--panel);
-  border: 1px solid var(--panel-line);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.leaderboard-row{
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--panel-line);
-  align-items: center;
-  font-size: 0.88rem;
-}
-.leaderboard-row:last-child{ border-bottom: none; }
-.leaderboard-row.head{ color: var(--ink-faint); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
-.leaderboard-row .name{ font-weight: 500; }
-.leaderboard-row .ret{ font-family: var(--font-mono); color: var(--up); }
-.risk-dots{ display: flex; gap: 4px; }
-.risk-dots span{ width: 6px; height: 6px; border-radius: 50%; background: var(--panel-line); }
-.risk-dots span.on{ background: var(--gold); }
-
-/* ==========================================================================
-   Education
-   ========================================================================== */
-
-.edu-grid{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap-md);
-}
-.edu-card{
-  border: 1px solid var(--panel-line);
-  border-radius: 4px;
-  overflow: hidden;
-  transition: border-color .35s;
-}
-.edu-card:hover{ border-color: var(--gold-dim); }
-.edu-media{
-  height: 160px;
-  background: var(--panel);
-  position: relative;
-  overflow: hidden;
-}
-.edu-media canvas{ width: 100%; height: 100%; }
-.edu-body{ padding: 24px; }
-.badge{
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid var(--gold-line);
-  padding: 4px 10px;
-  border-radius: 20px;
-  margin-bottom: 14px;
-}
-.edu-body h3{ font-size: 1.05rem; margin-bottom: 8px; }
-.edu-body p{ font-size: 0.9rem; }
 
 /* ==========================================================================
    Testimonials
@@ -1185,6 +1179,41 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 .office-card .tag{ font-family: var(--font-mono); font-size: 0.7rem; color: var(--gold-dim); text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
 
 /* ==========================================================================
+   About intro media — an abstract emblem panel standing in for a photo, so
+   the page stays consistent with the rest of the site's canvas/CSS visuals
+   rather than introducing generic stock photography.
+   ========================================================================== */
+
+.about-media{
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 42%, rgba(212,175,55,0.16), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(212,175,55,0.06) 0px, rgba(212,175,55,0.06) 1px, transparent 1px, transparent 32px),
+    repeating-linear-gradient(90deg, rgba(212,175,55,0.06) 0px, rgba(212,175,55,0.06) 1px, transparent 1px, transparent 32px),
+    var(--panel);
+  display: grid;
+  place-items: center;
+  transition: transform .35s var(--ease);
+}
+.about-media:hover{ transform: translateY(-4px); }
+.about-media-ring{
+  position: absolute;
+  border: 1px solid var(--gold-line);
+  border-radius: 50%;
+}
+.about-media-ring.is-outer{ width: 78%; aspect-ratio: 1; }
+.about-media-ring.is-inner{ width: 56%; aspect-ratio: 1; }
+.about-media svg{
+  position: relative;
+  width: 34%;
+  height: 34%;
+  color: var(--gold);
+}
+
+/* ==========================================================================
    Detail cards (markets/platforms/partnership expanded content)
    ========================================================================== */
 
@@ -1220,6 +1249,63 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 .session-table-wrap .compare td, .session-table-wrap .compare th{ font-family: var(--font-mono); }
 
 /* ==========================================================================
+   Market category cards (Metals / Energy / Indices / Agriculture / Currency)
+   Built on top of .detail-card for the shared border/radius/padding/background
+   — only the title, list and CTA treatment below are new.
+   ========================================================================== */
+
+.markets-grid{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--gap-md);
+}
+.market-cat-card{
+  transition: border-color .3s, transform .35s var(--ease), box-shadow .35s var(--ease);
+}
+.market-cat-card:hover{
+  border-color: var(--gold-dim);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 44px -24px rgba(212,175,55,0.4);
+}
+.market-cat-card h3{
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+.market-cat-list{
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0 0 18px;
+  display: grid;
+  gap: 11px;
+  border-bottom: 1px solid var(--panel-line);
+}
+.market-cat-list li{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--ink-dim);
+}
+.market-cat-list .mc-icon{ font-size: 1rem; flex-shrink: 0; line-height: 1; }
+.market-cat-cta{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--gold);
+  transition: gap .25s var(--ease);
+}
+.market-cat-cta .mc-arrow{ display: inline-block; transition: transform .25s var(--ease); }
+.market-cat-cta:hover{ gap: 10px; }
+.market-cat-cta:hover .mc-arrow{ transform: translateX(3px); }
+
+/* ==========================================================================
    CTA band (lightweight, reused across inner pages)
    ========================================================================== */
 
@@ -1253,6 +1339,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
    ========================================================================== */
 
 @media (max-width: 1024px){
+  .trust-grid{ grid-template-columns: repeat(2, 1fr); }
+  .markets-grid{ grid-template-columns: repeat(3, 1fr); }
   .hero-inner{ grid-template-columns: 1fr; gap: 56px; }
   .hero-copy h1{ max-width: 18ch; }
   .hero-visual{ max-width: 480px; }
@@ -1278,7 +1366,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   .hero-cta{ flex-direction: column; align-items: stretch; margin-bottom: 40px; }
   .hero-float{ position: static; margin-top: 14px; }
   .hero-visual{ display: flex; flex-direction: column; max-width: none; }
-  .stats-grid, .instruments-grid, .feature-grid, .timeline, .testimonial-grid, .edu-grid{ grid-template-columns: 1fr; }
+  .stats-grid, .instruments-grid, .feature-grid, .timeline, .testimonial-grid, .trust-grid, .markets-grid{ grid-template-columns: 1fr; }
   .feature-card.is-large{ grid-column: span 1; }
   .stat{ border-right: none; }
   .platform-wrap, .security-wrap, .copy-wrap, .presence-wrap{ grid-template-columns: 1fr; }

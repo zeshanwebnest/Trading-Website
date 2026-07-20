@@ -15,15 +15,13 @@
 <nav class="nav" aria-label="Primary">
   <div class="container">
     <a class="brand" href="index.html"><img src="assets/images/vault-easy-logo.png" alt="Vault Easy" class="brand-logo"></a>
+    <input type="checkbox" id="nav-check" class="nav-check" aria-label="Toggle menu">
     <ul class="nav-links">
       <li><a href="about.html">About</a></li>
       <li><a href="markets.html">Markets</a></li>
       <li><a href="platforms.html">Platforms</a></li>
       <li><a href="accounts.html">Accounts</a></li>
-      <li><a href="copy-trading.html">Copy Trading</a></li>
-      <li><a href="education.html">Education</a></li>
       <li><a href="promotions.html">Promotions</a></li>
-      <li><a href="partnership.html">Partnership</a></li>
       <li><a href="pricing.html">Pricing</a></li>
       <li><a href="faq.html">FAQ</a></li>
       <li><a href="contact.html">Contact</a></li>
@@ -32,16 +30,23 @@
       <a href="#" class="btn btn-ghost btn-sm">Client Portal</a>
       <a href="#" class="btn btn-gold btn-sm">Open Account</a>
     </div>
-    <button class="nav-toggle btn-ghost btn-sm" aria-expanded="false" aria-label="Toggle menu">Menu</button>
+    <label for="nav-check" class="nav-toggle btn-ghost btn-sm" aria-hidden="true"></label>
   </div>
 </nav>
 
 <header class="page-header">
-  <div class="container">
-    <div class="page-header-crumb"><a href="index.html">Home</a> / Promotions</div>
-    <div class="eyebrow">Promotions</div>
-    <h1>Offers built around real trading conditions.</h1>
-    <p>None of our promotions widen spreads, add hidden conditions, or restrict withdrawals — the pricing you see elsewhere on this site still applies.</p>
+  <div class="container platform-wrap">
+    <div class="reveal">
+      <div class="page-header-crumb"><a href="index.html">Home</a> / Promotions</div>
+      <div class="eyebrow">Promotions</div>
+      <h1>Offers built around real trading conditions.</h1>
+      <p>None of our promotions widen spreads, add hidden conditions, or restrict withdrawals — the pricing you see elsewhere on this site still applies.</p>
+    </div>
+    <div class="about-media reveal" aria-hidden="true">
+      <div class="about-media-ring is-outer"></div>
+      <div class="about-media-ring is-inner"></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 9h18M12 9v12"/><path d="M12 9c-1.3-3.2-6-3-6 0s4.7 2 6 0zM12 9c1.3-3.2 6-3 6 0s-4.7 2-6 0z"/></svg>
+    </div>
   </div>
 </header>
 
@@ -101,7 +106,6 @@
         <h5>Company</h5>
         <ul>
           <li><a href="about.html">About Us</a></li>
-          <li><a href="partnership.html">Partnership</a></li>
           <li><a href="contact.html">Careers</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -118,8 +122,6 @@
       <div class="footer-col">
         <h5>Resources</h5>
         <ul>
-          <li><a href="education.html">Education</a></li>
-          <li><a href="copy-trading.html">Copy Trading</a></li>
           <li><a href="promotions.html">Promotions</a></li>
           <li><a href="faq.html">FAQ</a></li>
         </ul>

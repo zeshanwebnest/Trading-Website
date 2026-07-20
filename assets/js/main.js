@@ -19,15 +19,18 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  const navToggle = document.querySelector('.nav-toggle');
+  // The mobile menu's open/close is driven by a native checkbox + label
+  // pair in the HTML/CSS (see .nav-check in main.css) — it works with zero
+  // JavaScript. Everything here is pure enhancement on top of that, so if
+  // any of it fails to run, the toggle itself still works.
+  const navCheck = document.querySelector('.nav-check');
   const navLinks = document.querySelector('.nav-links');
-  if (navToggle && navLinks) {
+  if (navCheck && navLinks) {
     // Plain `overflow:hidden` on <body> is well known to not reliably stop
     // background touch-scroll on iOS Safari. Pinning the body in place with
     // position:fixed and restoring the exact scroll offset on close is the
     // standard cross-browser-safe way to lock scroll behind an open menu.
     let lockedScrollY = 0;
-
     const lockScroll = () => {
       lockedScrollY = window.scrollY;
       document.body.style.position = 'fixed';
@@ -41,31 +44,20 @@
       window.scrollTo(0, lockedScrollY);
     };
 
-    const setOpen = (open) => {
-      // Reading the current state directly off the element (rather than
-      // trusting a variable) means rapid/duplicate clicks can't desync the
-      // toggle from what's actually on screen.
-      if (open === navLinks.classList.contains('is-open')) return;
-      navLinks.classList.toggle('is-open', open);
-      navToggle.setAttribute('aria-expanded', String(open));
-      navToggle.textContent = open ? 'Close' : 'Menu';
-      if (open) lockScroll(); else unlockScroll();
-    };
-
-    navToggle.addEventListener('click', () => {
-      setOpen(!navLinks.classList.contains('is-open'));
+    navCheck.addEventListener('change', () => {
+      if (navCheck.checked) lockScroll(); else unlockScroll();
     });
     navLinks.querySelectorAll('a').forEach((link) => {
-      link.addEventListener('click', () => setOpen(false));
+      link.addEventListener('click', () => { navCheck.checked = false; unlockScroll(); });
     });
     // Esc closes the menu, and resizing past the mobile breakpoint (e.g.
     // rotating a tablet to landscape) shouldn't leave scroll locked behind
     // a menu that CSS has now hidden.
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape' && navCheck.checked) { navCheck.checked = false; unlockScroll(); }
     });
     window.addEventListener('resize', () => {
-      if (window.innerWidth > 1400) setOpen(false);
+      if (window.innerWidth > 1400 && navCheck.checked) { navCheck.checked = false; unlockScroll(); }
     });
   }
 

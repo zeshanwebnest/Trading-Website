@@ -15,15 +15,13 @@
 <nav class="nav" aria-label="Primary">
   <div class="container">
     <a class="brand" href="index.html"><img src="assets/images/vault-easy-logo.png" alt="Vault Easy" class="brand-logo"></a>
+    <input type="checkbox" id="nav-check" class="nav-check" aria-label="Toggle menu">
     <ul class="nav-links">
       <li><a href="about.html">About</a></li>
       <li><a href="markets.html">Markets</a></li>
       <li><a href="platforms.html">Platforms</a></li>
       <li><a href="accounts.html">Accounts</a></li>
-      <li><a href="copy-trading.html">Copy Trading</a></li>
-      <li><a href="education.html">Education</a></li>
       <li><a href="promotions.html">Promotions</a></li>
-      <li><a href="partnership.html">Partnership</a></li>
       <li><a href="pricing.html">Pricing</a></li>
       <li><a href="faq.html">FAQ</a></li>
       <li><a href="contact.html">Contact</a></li>
@@ -32,7 +30,7 @@
       <a href="#" class="btn btn-ghost btn-sm">Client Portal</a>
       <a href="#" class="btn btn-gold btn-sm">Open Account</a>
     </div>
-    <button class="nav-toggle btn-ghost btn-sm" aria-expanded="false" aria-label="Toggle menu">Menu</button>
+    <label for="nav-check" class="nav-toggle btn-ghost btn-sm" aria-hidden="true"></label>
   </div>
 </nav>
 
@@ -70,8 +68,8 @@
         </div>
       </div>
       <div class="hero-float hero-float-a">
-        <span class="hero-float-label">Strategy · 90d Return</span>
-        <span class="hero-float-value up">+18.4%</span>
+        <span class="hero-float-label">Commission on Forex</span>
+        <span class="hero-float-value up">None</span>
       </div>
       <div class="hero-float hero-float-b">
         <span class="hero-float-label">Order Filled</span>
@@ -114,6 +112,54 @@
   </div>
 </section>
 
+<section class="section-pad" id="why-choose-us">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Why Choose Us</div>
+      <h2>Built on the fundamentals that matter.</h2>
+      <p>Four things every client can count on, regardless of account tier.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <div>
+          <h3>Trusted Brokerage</h3>
+          <p>Incorporated in Panama, serving clients internationally.</p>
+        </div>
+      </div>
+      <div class="trust-card reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+        </div>
+        <div>
+          <h3>Fast Execution</h3>
+          <p>Ultra-fast order processing on every account tier.</p>
+        </div>
+      </div>
+      <div class="trust-card reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.5 4 5.5 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.5-4-9s1.5-6.5 4-9z"/></svg>
+        </div>
+        <div>
+          <h3>Global Markets</h3>
+          <p>Access to major exchanges from a single account.</p>
+        </div>
+      </div>
+      <div class="trust-card reveal">
+        <div class="trust-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M4 13a8 8 0 0116 0"/><rect x="3" y="13" width="4" height="6" rx="1.5"/><rect x="17" y="13" width="4" height="6" rx="1.5"/><path d="M19 19v1a2 2 0 01-2 2h-3"/></svg>
+        </div>
+        <div>
+          <h3>Professional Support</h3>
+          <p>A 24/5 experienced team, reachable when you need them.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="section-pad" id="markets">
   <div class="container">
     <div class="section-head reveal">
@@ -136,6 +182,63 @@
         <div class="instrument-top"><h3>CFD Shares</h3><span class="instrument-count">Global equities</span></div>
         <canvas data-vol="0.9"></canvas>
         <div class="instrument-foot"><span>Account</span><b>All-in-one</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad" id="trading-categories">
+  <div class="container">
+    <div class="section-head reveal">
+      <div class="eyebrow">Trading Categories</div>
+      <h2>Browse instruments by category.</h2>
+      <p>All traded as CFD futures or spot forex through the same all-in-one account.</p>
+    </div>
+    <div class="markets-grid">
+      <div class="detail-card market-cat-card reveal">
+        <h3>Metals</h3>
+        <ul class="market-cat-list">
+          <li><span class="mc-icon">🥇</span>Gold</li>
+          <li><span class="mc-icon">🥈</span>Silver</li>
+          <li><span class="mc-icon">🥉</span>Copper</li>
+        </ul>
+        <a href="markets.html" class="market-cat-cta">View Markets <span class="mc-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="detail-card market-cat-card reveal">
+        <h3>Energy</h3>
+        <ul class="market-cat-list">
+          <li><span class="mc-icon">🛢️</span>Crude Oil</li>
+          <li><span class="mc-icon">🛢️</span>Brent Crude Oil</li>
+          <li><span class="mc-icon">🔥</span>Natural Gas</li>
+        </ul>
+        <a href="markets.html" class="market-cat-cta">View Markets <span class="mc-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="detail-card market-cat-card reveal">
+        <h3>Indices</h3>
+        <ul class="market-cat-list">
+          <li><span class="mc-icon">📈</span>Nasdaq</li>
+          <li><span class="mc-icon">📊</span>S&amp;P 500</li>
+          <li><span class="mc-icon">📉</span>Dow Jones</li>
+        </ul>
+        <a href="markets.html" class="market-cat-cta">View Markets <span class="mc-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="detail-card market-cat-card reveal">
+        <h3>Agriculture</h3>
+        <ul class="market-cat-list">
+          <li><span class="mc-icon">🌾</span>Wheat</li>
+          <li><span class="mc-icon">🍚</span>Rice</li>
+          <li><span class="mc-icon">🧶</span>Cotton</li>
+        </ul>
+        <a href="markets.html" class="market-cat-cta">View Markets <span class="mc-arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="detail-card market-cat-card reveal">
+        <h3>Currency</h3>
+        <ul class="market-cat-list">
+          <li><span class="mc-icon">🇪🇺🇺🇸</span>EUR/USD</li>
+          <li><span class="mc-icon">🇬🇧🇺🇸</span>GBP/USD</li>
+          <li><span class="mc-icon">🇺🇸🇯🇵</span>USD/JPY</li>
+        </ul>
+        <a href="markets.html" class="market-cat-cta">View Markets <span class="mc-arrow" aria-hidden="true">→</span></a>
       </div>
     </div>
   </div>
@@ -223,7 +326,7 @@
         <div class="eyebrow">Platforms</div>
         <h2>Trade from a desk, a laptop, or a departure lounge.</h2>
         <ul class="platform-list">
-          <li>Full MetaTrader 5 suite with custom Vault Easy indicator packs pre-installed.</li>
+          <li>Full VaultEasy Desktop Trader with real-time charting and order-flow overlays.</li>
           <li>A native web terminal — no download, full charting, one-click execution.</li>
           <li>iOS and Android apps with biometric login and push price alerts.</li>
           <li>REST and FIX API access for algorithmic and high-frequency strategies.</li>
@@ -285,61 +388,6 @@
           <li><span class="num">03</span><div><h4>Commission-free, swap-free forex</h4><p>No commission and no overnight swap on forex positions, so the cost of a trade is easy to see in advance.</p></div></li>
           <li><span class="num">04</span><div><h4>Incorporated in Panama</h4><p>Vault Easy operates as a Panama-incorporated entity serving clients internationally.</p></div></li>
         </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section-pad" id="copy-trading">
-  <div class="container">
-    <div class="copy-wrap">
-      <div class="reveal">
-        <div class="eyebrow">Copy Trading</div>
-        <h2>Allocate alongside verified strategies.</h2>
-        <p style="margin-bottom:28px;">Every strategy provider on Vault Easy trades a funded account of their own — track record is real capital, not a backtest.</p>
-        <a href="copy-trading.html" class="btn btn-gold">Explore strategies</a>
-      </div>
-      <div class="leaderboard reveal">
-        <div class="leaderboard-row head"><span>Strategy</span><span>90d return</span><span>Risk</span><span>Followers</span></div>
-        <div class="leaderboard-row"><span class="name">Vault Easy Macro Alpha</span><span class="ret tabular">+18.4%</span><span class="risk-dots"><span class="on"></span><span class="on"></span><span></span><span></span><span></span></span><span class="tabular">1,204</span></div>
-        <div class="leaderboard-row"><span class="name">Northline Swing Desk</span><span class="ret tabular">+11.9%</span><span class="risk-dots"><span class="on"></span><span></span><span></span><span></span><span></span></span><span class="tabular">876</span></div>
-        <div class="leaderboard-row"><span class="name">Solstice Metals Fund</span><span class="ret tabular">+9.2%</span><span class="risk-dots"><span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span></span><span class="tabular">642</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section-pad" id="education">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Education</div>
-      <h2>Trade with a reason, not a hunch.</h2>
-      <p>Structured learning paths built by the same desk that runs your execution.</p>
-    </div>
-    <div class="edu-grid">
-      <div class="edu-card reveal">
-        <div class="edu-media"><canvas></canvas></div>
-        <div class="edu-body">
-          <span class="badge">Beginner</span>
-          <h3>Market Fundamentals</h3>
-          <p>How currency, index and commodity markets actually move — and why.</p>
-        </div>
-      </div>
-      <div class="edu-card reveal">
-        <div class="edu-media"><canvas></canvas></div>
-        <div class="edu-body">
-          <span class="badge">Intermediate</span>
-          <h3>Technical Analysis</h3>
-          <p>Reading structure, liquidity and momentum without the noise.</p>
-        </div>
-      </div>
-      <div class="edu-card reveal">
-        <div class="edu-media"><canvas></canvas></div>
-        <div class="edu-body">
-          <span class="badge">Advanced</span>
-          <h3>Risk &amp; Position Sizing</h3>
-          <p>The discipline that separates funded accounts from blown ones.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -465,7 +513,6 @@
         <h5>Company</h5>
         <ul>
           <li><a href="about.html">About Us</a></li>
-          <li><a href="partnership.html">Partnership</a></li>
           <li><a href="contact.html">Careers</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -482,8 +529,6 @@
       <div class="footer-col">
         <h5>Resources</h5>
         <ul>
-          <li><a href="education.html">Education</a></li>
-          <li><a href="copy-trading.html">Copy Trading</a></li>
           <li><a href="promotions.html">Promotions</a></li>
           <li><a href="faq.html">FAQ</a></li>
         </ul>

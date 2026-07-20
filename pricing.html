@@ -15,15 +15,13 @@
 <nav class="nav" aria-label="Primary">
   <div class="container">
     <a class="brand" href="index.html"><img src="assets/images/vault-easy-logo.png" alt="Vault Easy" class="brand-logo"></a>
+    <input type="checkbox" id="nav-check" class="nav-check" aria-label="Toggle menu">
     <ul class="nav-links">
       <li><a href="about.html">About</a></li>
       <li><a href="markets.html">Markets</a></li>
       <li><a href="platforms.html">Platforms</a></li>
       <li><a href="accounts.html">Accounts</a></li>
-      <li><a href="copy-trading.html">Copy Trading</a></li>
-      <li><a href="education.html">Education</a></li>
       <li><a href="promotions.html">Promotions</a></li>
-      <li><a href="partnership.html">Partnership</a></li>
       <li><a href="pricing.html">Pricing</a></li>
       <li><a href="faq.html">FAQ</a></li>
       <li><a href="contact.html">Contact</a></li>
@@ -32,16 +30,23 @@
       <a href="#" class="btn btn-ghost btn-sm">Client Portal</a>
       <a href="#" class="btn btn-gold btn-sm">Open Account</a>
     </div>
-    <button class="nav-toggle btn-ghost btn-sm" aria-expanded="false" aria-label="Toggle menu">Menu</button>
+    <label for="nav-check" class="nav-toggle btn-ghost btn-sm" aria-hidden="true"></label>
   </div>
 </nav>
 
 <header class="page-header">
-  <div class="container">
-    <div class="page-header-crumb"><a href="index.html">Home</a> / Pricing</div>
-    <div class="eyebrow">Pricing &amp; Spreads</div>
-    <h1>Transparent pricing, disclosed in full.</h1>
-    <p>Forex trades commission-free and swap-free. CFD futures and CFD shares carry the commission and swap rates shown below. Spreads widen during major news releases and low-liquidity hours, as with any broker.</p>
+  <div class="container platform-wrap">
+    <div class="reveal">
+      <div class="page-header-crumb"><a href="index.html">Home</a> / Pricing</div>
+      <div class="eyebrow">Pricing &amp; Spreads</div>
+      <h1>Transparent pricing, disclosed in full.</h1>
+      <p>Forex trades commission-free and swap-free. CFD futures and CFD shares carry the commission and swap rates shown below. Spreads widen during major news releases and low-liquidity hours, as with any broker.</p>
+    </div>
+    <div class="about-media reveal" aria-hidden="true">
+      <div class="about-media-ring is-outer"></div>
+      <div class="about-media-ring is-inner"></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1"><circle cx="7.5" cy="7.5" r="2.2"/><circle cx="16.5" cy="16.5" r="2.2"/><path d="M6 18L18 6"/></svg>
+    </div>
   </div>
 </header>
 
@@ -111,7 +116,6 @@
         <h5>Company</h5>
         <ul>
           <li><a href="about.html">About Us</a></li>
-          <li><a href="partnership.html">Partnership</a></li>
           <li><a href="contact.html">Careers</a></li>
           <li><a href="contact.html">Contact</a></li>
         </ul>
@@ -128,8 +132,6 @@
       <div class="footer-col">
         <h5>Resources</h5>
         <ul>
-          <li><a href="education.html">Education</a></li>
-          <li><a href="copy-trading.html">Copy Trading</a></li>
           <li><a href="promotions.html">Promotions</a></li>
           <li><a href="faq.html">FAQ</a></li>
         </ul>
