@@ -1089,56 +1089,6 @@ body:has(.nav-check:checked){ overflow: hidden; }
 .page-header-crumb a:hover{ color: var(--gold); }
 
 /* ==========================================================================
-   Promotions
-   ========================================================================== */
-
-.promo-grid{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap-md);
-}
-.promo-card{
-  background: var(--panel);
-  border: 1px solid var(--panel-line);
-  border-radius: 4px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.35s, transform 0.35s var(--ease);
-}
-.promo-card:hover{ border-color: var(--gold-dim); transform: translateY(-4px); }
-.promo-card.is-featured{ border-color: var(--gold-dim); background: linear-gradient(180deg, var(--gold-wash), var(--panel) 60%); }
-.promo-tag{
-  align-self: flex-start;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--gold);
-  border: 1px solid var(--gold-line);
-  padding: 5px 12px;
-  border-radius: 20px;
-  margin-bottom: 20px;
-}
-.promo-card h3{ font-size: 1.3rem; margin-bottom: 10px; }
-.promo-card p{ font-size: 0.92rem; margin-bottom: 24px; }
-.promo-value{
-  font-family: var(--font-mono);
-  color: var(--gold);
-  font-size: 2rem;
-  margin-bottom: 16px;
-}
-.promo-card .btn{ margin-top: auto; }
-.promo-terms{
-  font-size: 0.8rem;
-  color: var(--ink-faint);
-  border-top: 1px solid var(--panel-line);
-  padding-top: 20px;
-  margin-top: var(--gap-lg);
-  line-height: 1.7;
-}
-
-/* ==========================================================================
    Forms (contact)
    ========================================================================== */
 
@@ -1353,9 +1303,8 @@ body:has(.nav-check:checked){ overflow: hidden; }
   .stat{ border-bottom: 1px solid var(--panel-line); }
   .timeline{ grid-template-columns: repeat(2, 1fr); gap: var(--gap-lg) var(--gap-md); }
   .timeline::before{ display: none; }
-  .testimonial-grid, .edu-grid{ grid-template-columns: repeat(2, 1fr); }
+  .testimonial-grid{ grid-template-columns: repeat(2, 1fr); }
   .footer-top{ grid-template-columns: 1fr 1fr; }
-  .promo-grid{ grid-template-columns: 1fr 1fr; }
   .contact-wrap{ grid-template-columns: 1fr; gap: var(--gap-lg); }
 }
 
@@ -1376,7 +1325,6 @@ body:has(.nav-check:checked){ overflow: hidden; }
   .newsletter-form{ flex-direction: column; }
   .awards-strip{ justify-content: flex-start; }
   .compare{ min-width: 640px; }
-  .promo-grid{ grid-template-columns: 1fr; }
   .form-grid{ grid-template-columns: 1fr; }
   .form-field.is-full{ grid-column: span 1; }
   .office-card{ flex-direction: column; gap: 8px; }
