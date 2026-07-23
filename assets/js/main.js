@@ -145,68 +145,154 @@
   });
 
   /* ---------------------------------------------------------------------
-     Canvas: hero equity curve
+     Canvas: hero live candlestick chart. Not real market data — a
+     continuously-scrolling OHLC series that ticks a new candle every
+     TICK_MS, with the price/delta/24h stats above and below the chart
+     kept in sync with the same series so the whole panel reads as one
+     live terminal rather than a static illustration.
      --------------------------------------------------------------------- */
   const heroCanvas = document.getElementById('hero-chart');
   if (heroCanvas) {
     const ctx = heroCanvas.getContext('2d');
-    let w, h, points = [];
-    const POINT_COUNT = 60;
+    const priceEl = document.querySelector('.hero-panel-price .price-value');
+    const deltaEl = document.querySelector('.hero-panel-price .delta');
+    const footEls = document.querySelectorAll('.hero-panel-foot b');
+    const dpr = window.devicePixelRatio || 1;
+
+    const CANDLE_COUNT = 26;
+    const TICK_MS = 1700;
+    let w = 0, h = 0, candles = [];
+
+    const nextCandle = (prevClose) => {
+      const open = prevClose;
+      const close = open + (Math.random() - 0.48) * 6.5;
+      const high = Math.max(open, close) + Math.random() * 3;
+      const low = Math.min(open, close) - Math.random() * 3;
+      return { open, close, high, low };
+    };
+
+    const seed = () => {
+      candles = [];
+      let last = 2398.4;
+      for (let i = 0; i < CANDLE_COUNT; i++) {
+        const c = nextCandle(last);
+        candles.push(c);
+        last = c.close;
+      }
+    };
+    seed();
 
     const resize = () => {
       const rect = heroCanvas.getBoundingClientRect();
-      w = heroCanvas.width = rect.width;
-      h = heroCanvas.height = rect.height;
-      points = [];
-      let val = h * 0.62;
-      for (let i = 0; i < POINT_COUNT; i++) {
-        val += (Math.sin(i * 0.7) * 6) + (Math.random() - 0.45) * 26;
-        val = Math.max(h * 0.28, Math.min(h * 0.8, val));
-        points.push(val);
-      }
+      w = rect.width || heroCanvas.clientWidth || 1;
+      h = rect.height || heroCanvas.clientHeight || 1;
+      heroCanvas.width = w * dpr;
+      heroCanvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
     window.addEventListener('resize', resize);
 
-    let offset = 0;
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h);
-      const step = w / (POINT_COUNT - 1);
+    const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-      ctx.beginPath();
-      points.forEach((y, i) => {
-        const x = i * step;
-        const drift = Math.sin((i + offset) * 0.12) * 4;
-        if (i === 0) ctx.moveTo(x, y + drift);
-        else ctx.lineTo(x, y + drift);
-      });
-
-      const grad = ctx.createLinearGradient(0, 0, w, 0);
-      grad.addColorStop(0, 'rgba(212,175,55,0.05)');
-      grad.addColorStop(0.5, 'rgba(212,175,55,0.75)');
-      grad.addColorStop(1, 'rgba(240,215,124,0.95)');
-      ctx.strokeStyle = grad;
-      ctx.lineWidth = 1.6;
-      ctx.shadowColor = 'rgba(212,175,55,0.5)';
-      ctx.shadowBlur = 12;
-      ctx.stroke();
-
-      const fill = ctx.createLinearGradient(0, 0, 0, h);
-      fill.addColorStop(0, 'rgba(212,175,55,0.14)');
-      fill.addColorStop(1, 'rgba(212,175,55,0)');
-      ctx.lineTo(w, h);
-      ctx.lineTo(0, h);
-      ctx.closePath();
-      ctx.fillStyle = fill;
-      ctx.shadowBlur = 0;
-      ctx.fill();
-
-      if (!reduceMotion) {
-        offset += 0.015;
-        requestAnimationFrame(draw);
+    const updateStats = () => {
+      const last = candles[candles.length - 1];
+      const first = candles[0];
+      if (priceEl) priceEl.textContent = fmt(last.close);
+      if (deltaEl) {
+        const pct = ((last.close - first.open) / first.open) * 100;
+        const up = pct >= 0;
+        deltaEl.textContent = `${up ? '▲' : '▼'} ${Math.abs(pct).toFixed(2)}%`;
+        deltaEl.classList.toggle('up', up);
+        deltaEl.classList.toggle('down', !up);
+      }
+      if (footEls.length === 3) {
+        const high = Math.max(...candles.map((c) => c.high));
+        const low = Math.min(...candles.map((c) => c.low));
+        footEls[0].textContent = fmt(high);
+        footEls[1].textContent = fmt(low);
+        footEls[2].textContent = `$${(800 + Math.random() * 90).toFixed(0)}M`;
       }
     };
-    draw();
+    updateStats();
+
+    const tick = () => {
+      candles.push(nextCandle(candles[candles.length - 1].close));
+      candles.shift();
+      updateStats();
+    };
+
+    const draw = (slide) => {
+      ctx.clearRect(0, 0, w, h);
+
+      const prices = candles.flatMap((c) => [c.high, c.low]);
+      const max = Math.max(...prices), min = Math.min(...prices);
+      const span = (max - min) || 1;
+      const pad = span * 0.18;
+      const yFor = (p) => h - ((p - (min - pad)) / (span + pad * 2)) * h;
+
+      ctx.strokeStyle = 'rgba(212,175,55,0.08)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i < 4; i++) {
+        const y = Math.round((h / 4) * i) + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+
+      const cw = w / CANDLE_COUNT;
+      const bodyW = Math.max(cw * 0.5, 2);
+      const slideOffset = slide * cw;
+
+      candles.forEach((c, i) => {
+        const x = i * cw - slideOffset + cw / 2;
+        if (x < -cw || x > w + cw) return;
+        const up = c.close >= c.open;
+        const rgb = up ? '111,174,140' : '194,107,95';
+        const isLast = i === candles.length - 1;
+
+        ctx.strokeStyle = `rgba(${rgb},${isLast ? 0.9 : 0.55})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, yFor(c.high));
+        ctx.lineTo(x, yFor(c.low));
+        ctx.stroke();
+
+        const yOpen = yFor(c.open), yClose = yFor(c.close);
+        const top = Math.min(yOpen, yClose), bh = Math.max(Math.abs(yClose - yOpen), 1.5);
+        if (isLast) { ctx.shadowColor = `rgba(${rgb},0.7)`; ctx.shadowBlur = 10; }
+        ctx.fillStyle = `rgba(${rgb},${isLast ? 0.85 : 0.45})`;
+        ctx.fillRect(x - bodyW / 2, top, bodyW, bh);
+        ctx.shadowBlur = 0;
+      });
+
+      const lineY = yFor(candles[candles.length - 1].close);
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = 'rgba(212,175,55,0.55)';
+      ctx.shadowColor = 'rgba(212,175,55,0.6)';
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.moveTo(0, lineY);
+      ctx.lineTo(w, lineY);
+      ctx.stroke();
+      ctx.restore();
+    };
+
+    if (reduceMotion) {
+      draw(0);
+    } else {
+      let lastTick = 0;
+      const render = (t) => {
+        if (!lastTick) lastTick = t;
+        const elapsed = t - lastTick;
+        if (elapsed >= TICK_MS) { tick(); lastTick = t; }
+        draw(Math.min(elapsed / TICK_MS, 1));
+        requestAnimationFrame(render);
+      };
+      requestAnimationFrame(render);
+    }
   }
 
   /* ---------------------------------------------------------------------
@@ -244,21 +330,12 @@
     ctx.lineTo(w, h);
     ctx.lineTo(0, h);
     ctx.closePath();
-    const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, color.replace(')', `,${fillOpacity})`).replace('rgb', 'rgba').replace('#d4af37', 'rgba(212,175,55');
     ctx.fillStyle = `rgba(212,175,55,${fillOpacity})`;
     ctx.fill();
   };
 
   document.querySelectorAll('.instrument-card canvas').forEach((c) => {
     drawSparkline(c, { points: 20, volatility: parseFloat(c.dataset.vol || '1') });
-  });
-
-  const deviceCanvas = document.querySelector('.device-frame canvas');
-  if (deviceCanvas) drawSparkline(deviceCanvas, { points: 40, volatility: 1.4 });
-
-  document.querySelectorAll('.edu-media canvas').forEach((c) => {
-    drawSparkline(c, { points: 16, volatility: 0.7, fillOpacity: 0.08 });
   });
 
   /* ---------------------------------------------------------------------
