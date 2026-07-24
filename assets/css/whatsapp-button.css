@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Vault Easy — WhatsApp Floating Button
+   Modular, self-contained. Safe to load after main.css on every page.
+   Uses the site's existing design tokens (--gold, --void, --ease) when
+   available and falls back to hard-coded values if they aren't defined,
+   so this file works even if it's ever used outside main.css's scope.
+   ========================================================================== */
+
+.wa-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9500; /* above page content/sections (0–2) and the sticky nav (100),
+                    but below the mobile nav-check overlay (9999/10000) so the
+                    open mobile menu always wins */
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #25D366; /* official WhatsApp brand green */
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.25s var(--ease, cubic-bezier(.16, .84, .44, 1)),
+              box-shadow 0.25s var(--ease, cubic-bezier(.16, .84, .44, 1));
+  will-change: transform;
+}
+
+.wa-float__icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+  color: #ffffff;
+  fill: currentColor;
+}
+
+/* Subtle pulsing halo behind the button to draw the eye without being
+   distracting — a soft ring that expands and fades, looping slowly. */
+.wa-float__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #25D366;
+  opacity: 0.55;
+  animation: wa-pulse 2.6s ease-out infinite;
+  pointer-events: none;
+}
+
+@keyframes wa-pulse {
+  0%   { transform: scale(1);   opacity: 0.45; }
+  70%  { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* Hover (desktop / devices with a precise pointer only, so this never
+   sticks "on" after a tap on touchscreens) */
+@media (hover: hover) and (pointer: fine) {
+  .wa-float:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow:
+      0 10px 26px rgba(0, 0, 0, 0.32),
+      0 4px 10px rgba(0, 0, 0, 0.24),
+      0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  }
+}
+
+/* Click / tap feedback */
+.wa-float:active {
+  transform: scale(0.92);
+  box-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+}
+
+/* Keyboard focus (accessibility) — visible ring that doesn't rely on color
+   alone and matches the site's gold accent */
+.wa-float:focus-visible {
+  outline: none;
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.28),
+    0 0 0 3px var(--void, #050505),
+    0 0 0 5px var(--gold, #d4af37);
+}
+
+/* Respect reduced-motion preference, same convention main.css uses */
+@media (prefers-reduced-motion: reduce) {
+  .wa-float,
+  .wa-float__pulse {
+    animation: none;
+    transition: none;
+  }
+  .wa-float:hover { transform: none; }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .wa-float {
+    right: 18px;
+    bottom: 18px;
+    width: 56px;
+    height: 56px;
+  }
+  .wa-float__icon { width: 30px; height: 30px; }
+}
+
+/* Mobile — lifted clear of iOS/Android browser chrome (address bar,
+   share/home indicator) and any small-screen bottom UI, using safe-area
+   insets so it never sits under a notch/gesture-bar overlay */
+@media (max-width: 760px) {
+  .wa-float {
+    right: 14px;
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    width: 52px;
+    height: 52px;
+  }
+  .wa-float__icon { width: 28px; height: 28px; }
+}
+
+@media (max-width: 480px) {
+  .wa-float {
+    right: 12px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+}
