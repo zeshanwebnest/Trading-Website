@@ -1,0 +1,563 @@
+<title>Verification Review Workflow — Vault Easy</title>
+<style>
+:root{
+  --void: #050505;
+  --panel: #0f0e0c;
+  --panel-raised: #17150f;
+  --line: #23201a;
+
+  --gold: #d4af37;
+  --gold-soft: #f0d77c;
+  --gold-wash: rgba(212,175,55,0.08);
+  --gold-line: rgba(212,175,55,0.22);
+
+  --ink: #f1ede2;
+  --ink-dim: #b6ae9c;
+  --ink-faint: #85795f;
+
+  --ok: #6fae8c;
+  --ok-wash: rgba(111,174,140,0.1);
+  --ok-line: rgba(111,174,140,0.3);
+
+  --danger: #d97a6c;
+  --danger-wash: rgba(217,122,108,0.1);
+  --danger-line: rgba(217,122,108,0.32);
+
+  --font-display: 'Space Grotesk', 'Century Gothic', 'Futura', 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, 'SFMono-Regular', monospace;
+
+  --ease: cubic-bezier(.16,.84,.44,1);
+  color-scheme: dark;
+}
+
+/* This document mirrors Vault Easy's own product theme deliberately — it is
+   the spec for a Vault Easy subsystem, and the brand doesn't have (or want)
+   a light mode anywhere else in the product, so this stays single-theme. */
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce){ html{ scroll-behavior: auto; } }
+
+body{
+  margin: 0;
+  background: var(--void);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 0%, rgba(212,175,55,0.05), transparent 60%);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+img{ max-width: 100%; }
+a{ color: var(--gold); }
+code{ font-family: var(--font-mono); }
+
+h1,h2,h3,h4{
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.shell{
+  display: grid;
+  grid-template-columns: 220px minmax(0, 720px);
+  gap: 64px;
+  justify-content: center;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 56px 32px 120px;
+}
+
+/* -------------------------------------------------------------------- */
+/* Masthead                                                              */
+/* -------------------------------------------------------------------- */
+.masthead{ grid-column: 1 / -1; margin-bottom: 8px; }
+.eyebrow{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 18px;
+}
+.eyebrow::before{ content: ""; width: 20px; height: 1px; background: var(--gold); opacity: 0.6; }
+.masthead h1{ font-size: clamp(1.9rem, 3.4vw, 2.5rem); max-width: 20ch; margin-bottom: 14px; }
+.masthead .dek{ color: var(--ink-dim); font-size: 1.05rem; max-width: 60ch; }
+.masthead .meta{
+  margin-top: 22px;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+.tag{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+}
+.tag.is-warn{ color: var(--danger); border-color: var(--danger-line); background: var(--danger-wash); }
+
+/* -------------------------------------------------------------------- */
+/* Side nav                                                              */
+/* -------------------------------------------------------------------- */
+.toc{ position: sticky; top: 56px; align-self: start; }
+.toc-label{
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin-bottom: 14px;
+}
+.toc ol{ list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: toc; }
+.toc li{ counter-increment: toc; }
+.toc a{
+  display: flex;
+  gap: 10px;
+  font-size: 0.86rem;
+  color: var(--ink-dim);
+  text-decoration: none;
+  line-height: 1.4;
+}
+.toc a::before{
+  content: counter(toc, decimal-leading-zero);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.toc a:hover{ color: var(--gold); }
+
+/* -------------------------------------------------------------------- */
+/* Article rhythm                                                        */
+/* -------------------------------------------------------------------- */
+article{ min-width: 0; }
+section{ margin-top: 64px; }
+section:first-of-type{ margin-top: 0; }
+section > h2{
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+  scroll-margin-top: 32px;
+}
+.section-kicker{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+section > p{ color: var(--ink-dim); margin: 16px 0; max-width: 68ch; }
+section > p.lead{ color: var(--ink); font-size: 1.02rem; }
+strong{ color: var(--ink); font-weight: 600; }
+
+/* -------------------------------------------------------------------- */
+/* Callouts                                                              */
+/* -------------------------------------------------------------------- */
+.callout{
+  border-radius: 8px;
+  padding: 22px 24px;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.callout-head{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+.callout p{ margin: 0; font-size: 0.92rem; color: var(--ink-dim); max-width: none; }
+.callout.is-danger{ border-color: var(--danger-line); background: var(--danger-wash); }
+.callout.is-danger .callout-head{ color: var(--danger); }
+.callout.is-gold{ border-color: var(--gold-line); background: var(--gold-wash); }
+.callout.is-gold .callout-head{ color: var(--gold); }
+.callout.is-ok{ border-color: var(--ok-line); background: var(--ok-wash); }
+.callout.is-ok .callout-head{ color: var(--ok); }
+.callout-icon{ width: 16px; height: 16px; flex-shrink: 0; }
+
+/* -------------------------------------------------------------------- */
+/* Status flow diagram                                                  */
+/* -------------------------------------------------------------------- */
+.flow{
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 28px 0 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.flow-node{
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-width: 108px;
+}
+.flow-pill{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 9px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.flow-node.is-submitted .flow-pill{ border-color: var(--ok-line); color: var(--ok); background: var(--ok-wash); }
+.flow-node.is-review .flow-pill{ border-color: var(--gold-line); color: var(--gold); background: var(--gold-wash); }
+.flow-node.is-verified .flow-pill{ border-color: var(--ok-line); color: var(--ok); background: var(--ok-wash); }
+.flow-node.is-rejected .flow-pill{ border-color: var(--danger-line); color: var(--danger); background: var(--danger-wash); }
+.flow-caption{ font-size: 0.72rem; color: var(--ink-faint); text-align: center; max-width: 12ch; }
+.flow-arrow{
+  flex-shrink: 0;
+  width: 40px;
+  height: 1px;
+  background: var(--line);
+  position: relative;
+  margin-bottom: 32px;
+}
+.flow-arrow::after{
+  content: "";
+  position: absolute;
+  right: 0; top: 50%;
+  width: 6px; height: 6px;
+  border-right: 1px solid var(--ink-faint);
+  border-bottom: 1px solid var(--ink-faint);
+  transform: translateY(-50%) rotate(-45deg);
+}
+.flow-branch{ display: flex; flex-direction: column; gap: 16px; }
+
+/* -------------------------------------------------------------------- */
+/* Step cards                                                            */
+/* -------------------------------------------------------------------- */
+.steps{ display: grid; gap: 2px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 24px; }
+.step{ background: var(--panel); padding: 24px 26px; display: grid; grid-template-columns: 40px 1fr; gap: 20px; }
+.step-num{
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--gold);
+  border: 1px solid var(--gold-line);
+  border-radius: 50%;
+  width: 36px; height: 36px;
+  display: grid;
+  place-items: center;
+}
+.step h3{ font-size: 1.02rem; margin-bottom: 8px; }
+.step p{ margin: 0 0 10px; font-size: 0.9rem; color: var(--ink-dim); max-width: 58ch; }
+.step ul{ margin: 10px 0 0; padding-left: 18px; color: var(--ink-dim); font-size: 0.88rem; display: grid; gap: 6px; }
+.step .field-list{ list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.step .field-list li{ font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-faint); }
+.step .field-list b{ color: var(--ink-dim); font-family: var(--font-body); font-weight: 500; }
+
+/* -------------------------------------------------------------------- */
+/* Requirement grid                                                      */
+/* -------------------------------------------------------------------- */
+.reqs{ display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+.req-card{ background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 20px 22px; }
+.req-card h4{ font-size: 0.92rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.req-card h4 svg{ width: 15px; height: 15px; color: var(--gold); flex-shrink: 0; }
+.req-card p{ margin: 0; font-size: 0.85rem; color: var(--ink-dim); }
+
+/* -------------------------------------------------------------------- */
+/* Code block                                                            */
+/* -------------------------------------------------------------------- */
+pre{
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 20px 22px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--ink-dim);
+  margin: 20px 0;
+}
+pre .k{ color: var(--gold); }
+pre .s{ color: var(--ok); }
+pre .c{ color: var(--ink-faint); font-style: italic; }
+
+/* -------------------------------------------------------------------- */
+/* Table                                                                 */
+/* -------------------------------------------------------------------- */
+.table-wrap{ overflow-x: auto; margin: 20px 0; }
+table{ width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+th, td{ text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th{ font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 500; }
+td{ color: var(--ink-dim); }
+td.who{ color: var(--ink); }
+.pill-sm{ font-family: var(--font-mono); font-size: 0.72rem; padding: 3px 9px; border-radius: 12px; border: 1px solid var(--line); }
+.pill-sm.no{ color: var(--danger); border-color: var(--danger-line); background: var(--danger-wash); }
+.pill-sm.yes{ color: var(--ok); border-color: var(--ok-line); background: var(--ok-wash); }
+
+footer{
+  grid-column: 1 / -1;
+  margin-top: 72px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: var(--ink-faint);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 860px){
+  .shell{ grid-template-columns: 1fr; padding: 40px 20px 80px; gap: 40px; }
+  .toc{ position: static; }
+  .toc ol{ display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .reqs{ grid-template-columns: 1fr; }
+  .step{ grid-template-columns: 32px 1fr; gap: 14px; padding: 20px; }
+}
+</style>
+
+<div class="shell">
+
+  <div class="masthead">
+    <div class="eyebrow">Vault Easy — Internal Engineering Spec</div>
+    <h1>The verification review workflow</h1>
+    <p class="dek">How an account moves from <b>Under Review</b> to <b>Verified</b>, who is allowed to move it, and what has to exist before any of this works for real.</p>
+    <div class="meta">
+      <span class="tag is-warn">⚠ Not yet implemented</span>
+      <span class="tag">Client dashboard: shipped</span>
+      <span class="tag">Admin review: spec only</span>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <ol>
+      <li><a href="#reality">Where things actually stand</a></li>
+      <li><a href="#lifecycle">The status lifecycle</a></li>
+      <li><a href="#prereqs">What has to exist first</a></li>
+      <li><a href="#queue">Finding submitted requests</a></li>
+      <li><a href="#review">The review screen</a></li>
+      <li><a href="#decision">Approving or rejecting</a></li>
+      <li><a href="#enforcement">Why users can't self-verify</a></li>
+      <li><a href="#data">Status field reference</a></li>
+    </ol>
+  </nav>
+
+  <article>
+
+    <section id="reality">
+      <p class="lead">This document specifies how admin review <em>should</em> work. None of the admin-facing half exists in the codebase today — this is the blueprint for it, not a manual for something already running.</p>
+
+      <div class="callout is-danger">
+        <div class="callout-head">
+          <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+          What exists vs. what this describes
+        </div>
+        <p>The Open Account form and Client Dashboard built so far are front-end only, by design. Submitted data is saved with <code>localStorage.setItem('vaultEasyAccount', …)</code> — inside that one visitor's own browser, never sent anywhere. There is no server, no database, and no admin login. The dashboard's status tracker is hardcoded to show <b>Submitted</b> as done and <b>Under Review</b> as current; nothing anywhere can currently move it to <b>Verified</b>, because no code exists to move it. An admin can't "view submitted requests" today because there's no shared place they land — each one is stranded on a different applicant's device.</p>
+      </div>
+
+      <p>Everything from here down describes the system as it needs to be built. Section <a href="#prereqs">3</a> covers the infrastructure that has to exist before any of it is real.</p>
+    </section>
+
+    <section id="lifecycle">
+      <div class="section-kicker">Target behavior</div>
+      <h2>The status lifecycle</h2>
+      <p>Four states, one direction of travel except for the resubmit loop after a rejection.</p>
+
+      <div class="flow">
+        <div class="flow-node is-submitted">
+          <div class="flow-pill">Submitted</div>
+          <div class="flow-caption">Applicant finishes the form</div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-node is-review">
+          <div class="flow-pill">Under Review</div>
+          <div class="flow-caption">Sitting in the admin queue</div>
+        </div>
+        <div class="flow-arrow"></div>
+        <div class="flow-branch">
+          <div class="flow-node is-verified">
+            <div class="flow-pill">Verified</div>
+            <div class="flow-caption">Admin approved</div>
+          </div>
+          <div class="flow-node is-rejected">
+            <div class="flow-pill">Rejected</div>
+            <div class="flow-caption">Admin declined, reason given</div>
+          </div>
+        </div>
+      </div>
+      <p>A <b>Rejected</b> applicant can edit and resubmit from their dashboard, which returns them to <b>Under Review</b> — not back to square one, and not auto-approved.</p>
+    </section>
+
+    <section id="prereqs">
+      <div class="section-kicker">Before any of this can be built</div>
+      <h2>What has to exist first</h2>
+      <p>Four pieces of infrastructure the current front-end prototype doesn't have. All four block everything described below.</p>
+
+      <div class="reqs">
+        <div class="req-card">
+          <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/></svg>A real database</h4>
+          <p>Submissions currently live in one browser's <code>localStorage</code>. They need a server-side table (or collection) keyed by applicant, so an admin — on a different machine entirely — can see them.</p>
+        </div>
+        <div class="req-card">
+          <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Encrypted document storage</h4>
+          <p>CNIC images and proof-of-address files need to land somewhere encrypted at rest, with access limited to the applicant and admin staff — not a public bucket, not inline in the database.</p>
+        </div>
+        <div class="req-card">
+          <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>A separate admin login</h4>
+          <p>Admin staff need their own authenticated accounts, distinct from client accounts, so "who is allowed to approve applications" is a real, checkable identity rather than a guess.</p>
+        </div>
+        <div class="req-card">
+          <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Role-based permissions</h4>
+          <p>A flag on the account record — <code>role: 'client' | 'admin'</code> — that every API endpoint checks before doing anything sensitive. This is what actually makes approval admin-only; see <a href="#enforcement">Section 7</a>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="queue">
+      <div class="section-kicker">Step 1 of 3 — Finding the work</div>
+      <h2>The verification queue</h2>
+      <p>Once an application exists server-side, the admin's entry point is a queue: every submission, newest first, filterable by status.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Applicant</th><th>Submitted</th><th>Status</th><th>Reviewer</th></tr></thead>
+          <tbody>
+            <tr><td class="who">A. Raza</td><td>2 hours ago</td><td><span class="pill-sm no">Under Review</span></td><td>—</td></tr>
+            <tr><td class="who">S. Malik</td><td>Yesterday</td><td><span class="pill-sm yes">Verified</span></td><td>F. Ahmed</td></tr>
+            <tr><td class="who">H. Qureshi</td><td>2 days ago</td><td><span class="pill-sm no">Under Review</span></td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>This table is illustrative — it shows the shape of the queue, not a real product screenshot, since the screen itself hasn't been built. Clicking a row opens the review screen in Section 5.</p>
+    </section>
+
+    <section id="review">
+      <div class="section-kicker">Step 2 of 3 — Reviewing an application</div>
+      <h2>The review screen</h2>
+      <p>One consolidated view per applicant — this is "where all documents and information are displayed." It mirrors the five steps of the Open Account form, so a reviewer sees data in the same shape the applicant entered it.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div>
+            <h3>Personal &amp; identity summary</h3>
+            <p>Name, contact details, and CNIC number rendered as text — plus the CNIC front and back images displayed inline, full size, click-to-zoom. This is the first cross-check: does the photo match the typed number and the applicant's stated name?</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div>
+            <h3>KYC profile</h3>
+            <p>Occupation, source of funds, income bracket, trading experience, and the Politically Exposed Person declaration — flagged visually if the applicant answered <b>Yes</b>, since that answer typically triggers additional review in most brokerages' compliance policy.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div>
+            <h3>Bank details</h3>
+            <p>Bank name, account title, and account number — with the account title checked against the applicant's stated full name, since a mismatch is one of the more common reasons to reject or ask for clarification.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div>
+            <h3>Supporting documents</h3>
+            <p>Proof of address and any additional uploaded file, previewed inline (images) or linked (PDFs) — never a bare filename with no way to actually look at it.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="decision">
+      <div class="section-kicker">Step 3 of 3 — Making the call</div>
+      <h2>Approving or rejecting</h2>
+      <p>Two actions live at the bottom of the review screen. Both require the reviewer to be signed in as an admin — see Section 7 for how that's actually enforced, not just displayed.</p>
+
+      <div class="callout is-ok">
+        <div class="callout-head">
+          <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+          Approve
+        </div>
+        <p>Sets <code>status: "verified"</code>, stamps <code>reviewedBy</code> and <code>reviewedAt</code>, and is the only thing that ever changes an account to Verified. The applicant's dashboard reflects the new status the next time it loads — no separate sync step, since it's reading the same server record the admin just wrote.</p>
+      </div>
+      <div class="callout is-danger">
+        <div class="callout-head">
+          <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          Reject
+        </div>
+        <p>Requires a short reason (e.g. "CNIC image unreadable — please re-upload"). Sets <code>status: "rejected"</code> and surfaces that reason on the applicant's dashboard, along with an option to edit the affected fields and resubmit — which returns the account to <b>Under Review</b>, not back to a blank form.</p>
+      </div>
+
+      <p>Either action should also queue an email to the applicant. A status change nobody tells them about isn't meaningfully different from no status change at all.</p>
+    </section>
+
+    <section id="enforcement">
+      <div class="section-kicker">The part that has to be right</div>
+      <h2>Why users can't self-verify</h2>
+      <p class="lead">Hiding the Approve button from regular users is not what makes this admin-only. Enforcement has to happen on the server, not in the browser.</p>
+      <p>Right now, and in any future version, a client's own browser is not a trusted environment — anyone can open dev tools and call an API directly, bypassing whatever buttons the interface does or doesn't show. So the rule "only admins can verify" has to be checked at the one point a user can't edit: the server, on every single request.</p>
+
+      <pre><span class="c">// Every status-changing request checks the caller's role server-side —</span>
+<span class="c">// never trusts a role or permission sent from the browser itself.</span>
+<span class="k">async function</span> approveApplication(request) {
+  <span class="k">const</span> session = <span class="k">await</span> getSession(request);
+
+  <span class="k">if</span> (!session || session.role !== <span class="s">'admin'</span>) {
+    <span class="k">return</span> respond(<span class="s">403</span>, <span class="s">'Forbidden'</span>);
+  }
+
+  <span class="c">// Only reachable past this line if the server itself confirmed</span>
+  <span class="c">// the caller is a signed-in admin — not because a button was visible.</span>
+  <span class="k">await</span> db.applications.update(request.applicationId, {
+    status: <span class="s">'verified'</span>,
+    reviewedBy: session.userId,
+    reviewedAt: <span class="s">new Date()</span>,
+  });
+}</pre>
+
+      <p>Three things fall out of that one rule:</p>
+      <ul style="color:var(--ink-dim); font-size:0.92rem; max-width:64ch; padding-left:20px; display:grid; gap:8px;">
+        <li>A client account, however it's manipulated, has no code path that can ever set its own <code>status</code> to <code>verified</code>.</li>
+        <li>Admin sessions are separate logins with their own credentials — not a checkbox on a normal user account.</li>
+        <li>Every approval and rejection is logged with <em>which</em> admin made the call, so the decision is attributable, not anonymous.</li>
+      </ul>
+    </section>
+
+    <section id="data">
+      <div class="section-kicker">Reference</div>
+      <h2>Status field reference</h2>
+      <p>The fields a real backend needs to add to today's <code>vaultEasyAccount</code> record once it's server-side.</p>
+      <pre><span class="k">status</span>: <span class="s">'submitted'</span> | <span class="s">'under_review'</span> | <span class="s">'verified'</span> | <span class="s">'rejected'</span>
+<span class="k">reviewedBy</span>: string | null       <span class="c">// admin user id, set on approve/reject</span>
+<span class="k">reviewedAt</span>: string | null       <span class="c">// ISO timestamp, set on approve/reject</span>
+<span class="k">rejectionReason</span>: string | null  <span class="c">// required when status is 'rejected'</span></pre>
+    </section>
+
+  </article>
+
+  <footer>
+    <span>Vault Easy — Verification Review Workflow</span>
+    <span>Specification, not shipped functionality</span>
+  </footer>
+
+</div>

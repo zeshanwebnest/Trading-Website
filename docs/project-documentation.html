@@ -1,0 +1,496 @@
+<title>Project Documentation — Vault Easy</title>
+<style>
+:root{
+  --void: #050505;
+  --panel: #0f0e0c;
+  --panel-raised: #17150f;
+  --line: #23201a;
+
+  --gold: #d4af37;
+  --gold-soft: #f0d77c;
+  --gold-wash: rgba(212,175,55,0.08);
+  --gold-line: rgba(212,175,55,0.22);
+
+  --ink: #f1ede2;
+  --ink-dim: #b6ae9c;
+  --ink-faint: #85795f;
+
+  --ok: #6fae8c;
+  --ok-wash: rgba(111,174,140,0.1);
+  --ok-line: rgba(111,174,140,0.3);
+
+  --warn: #d4af37;
+  --warn-wash: rgba(212,175,55,0.1);
+  --warn-line: rgba(212,175,55,0.3);
+
+  --danger: #d97a6c;
+  --danger-wash: rgba(217,122,108,0.1);
+  --danger-line: rgba(217,122,108,0.32);
+
+  --font-display: 'Space Grotesk', 'Century Gothic', 'Futura', 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, 'SFMono-Regular', monospace;
+
+  --ease: cubic-bezier(.16,.84,.44,1);
+  color-scheme: dark;
+}
+
+/* This is Vault Easy's own engineering documentation — deliberately kept in
+   the product's single dark/gold visual world rather than adding a light
+   theme the brand doesn't otherwise have. */
+
+*, *::before, *::after{ box-sizing: border-box; }
+html{ scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce){ html{ scroll-behavior: auto; } }
+
+body{
+  margin: 0;
+  background: var(--void);
+  background-image: radial-gradient(ellipse 60% 40% at 15% 0%, rgba(212,175,55,0.05), transparent 60%);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+img{ max-width: 100%; }
+a{ color: var(--gold); }
+code{ font-family: var(--font-mono); font-size: 0.9em; }
+
+h1,h2,h3,h4{
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.shell{
+  display: grid;
+  grid-template-columns: 240px minmax(0, 720px);
+  gap: 64px;
+  justify-content: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 32px 120px;
+}
+
+.masthead{ grid-column: 1 / -1; margin-bottom: 8px; }
+.eyebrow{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 18px;
+}
+.eyebrow::before{ content: ""; width: 20px; height: 1px; background: var(--gold); opacity: 0.6; }
+.masthead h1{ font-size: clamp(1.9rem, 3.4vw, 2.6rem); max-width: 22ch; margin-bottom: 14px; }
+.masthead .dek{ color: var(--ink-dim); font-size: 1.05rem; max-width: 62ch; }
+.masthead .meta{ margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-faint); }
+.tag{ display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--line); }
+.tag.is-ok{ color: var(--ok); border-color: var(--ok-line); background: var(--ok-wash); }
+.tag.is-warn{ color: var(--gold); border-color: var(--gold-line); background: var(--gold-wash); }
+
+.toc{ position: sticky; top: 40px; align-self: start; max-height: calc(100vh - 80px); overflow-y: auto; }
+.toc-label{ font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); margin-bottom: 14px; }
+.toc ol{ list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; counter-reset: toc; }
+.toc li{ counter-increment: toc; }
+.toc a{ display: flex; gap: 10px; font-size: 0.83rem; color: var(--ink-dim); text-decoration: none; line-height: 1.4; }
+.toc a::before{ content: counter(toc, decimal-leading-zero); font-family: var(--font-mono); font-size: 0.7rem; color: var(--ink-faint); flex-shrink: 0; padding-top: 1px; }
+.toc a:hover{ color: var(--gold); }
+
+article{ min-width: 0; }
+section{ margin-top: 60px; }
+section:first-of-type{ margin-top: 0; }
+section > h2{ font-size: 1.42rem; margin-bottom: 6px; scroll-margin-top: 24px; }
+.section-kicker{ font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+section > p{ color: var(--ink-dim); margin: 16px 0; max-width: 68ch; }
+section > p.lead{ color: var(--ink); font-size: 1.02rem; }
+strong{ color: var(--ink); font-weight: 600; }
+h3{ font-size: 1.05rem; margin: 28px 0 12px; }
+h4{ font-size: 0.95rem; margin: 20px 0 10px; color: var(--ink); }
+
+ul.plain, ol.plain{ margin: 12px 0; padding-left: 20px; color: var(--ink-dim); font-size: 0.94rem; display: grid; gap: 8px; }
+ul.plain li::marker, ol.plain li::marker{ color: var(--gold); }
+
+.callout{ border-radius: 8px; padding: 20px 22px; margin: 20px 0; border: 1px solid var(--line); background: var(--panel); }
+.callout-head{ display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+.callout p{ margin: 0; font-size: 0.9rem; color: var(--ink-dim); max-width: none; }
+.callout.is-warn{ border-color: var(--warn-line); background: var(--warn-wash); }
+.callout.is-warn .callout-head{ color: var(--gold); }
+.callout.is-ok{ border-color: var(--ok-line); background: var(--ok-wash); }
+.callout.is-ok .callout-head{ color: var(--ok); }
+.callout.is-danger{ border-color: var(--danger-line); background: var(--danger-wash); }
+.callout.is-danger .callout-head{ color: var(--danger); }
+.callout-icon{ width: 16px; height: 16px; flex-shrink: 0; }
+
+pre{
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px;
+  padding: 20px 22px; overflow-x: auto; font-family: var(--font-mono);
+  font-size: 0.8rem; line-height: 1.65; color: var(--ink-dim); margin: 20px 0;
+}
+pre .k{ color: var(--gold); }
+pre .c{ color: var(--ink-faint); }
+pre .p{ color: var(--ok); }
+
+.table-wrap{ overflow-x: auto; margin: 20px 0; }
+table{ width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+th, td{ text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th{ font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); font-weight: 500; white-space: nowrap; }
+td{ color: var(--ink-dim); }
+td code{ color: var(--gold); }
+
+.arch{
+  border: 1px solid var(--line); border-radius: 8px; padding: 28px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 24px 0; overflow-x: auto; background: var(--panel);
+}
+.arch-node{ flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 130px; text-align: center; }
+.arch-box{ font-family: var(--font-mono); font-size: 0.78rem; padding: 14px 16px; border-radius: 6px; border: 1px solid var(--gold-line); background: var(--gold-wash); color: var(--gold); width: 100%; }
+.arch-caption{ font-size: 0.72rem; color: var(--ink-faint); max-width: 16ch; }
+.arch-arrow{ flex-shrink: 0; color: var(--ink-faint); font-family: var(--font-mono); font-size: 1.1rem; }
+
+.status-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 24px 0; }
+.status-card{ border: 1px solid var(--line); border-radius: 8px; padding: 20px; background: var(--panel); }
+.status-card h4{ margin: 0 0 14px; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; }
+.status-card ul{ list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; font-size: 0.84rem; color: var(--ink-dim); }
+.status-card.is-done h4{ color: var(--ok); }
+.status-card.is-pending h4{ color: var(--gold); }
+.status-card.is-future h4{ color: var(--ink-faint); }
+.status-card li::before{ margin-right: 8px; font-family: var(--font-mono); }
+.status-card.is-done li::before{ content: "✓"; color: var(--ok); }
+.status-card.is-pending li::before{ content: "○"; color: var(--gold); }
+.status-card.is-future li::before{ content: "→"; color: var(--ink-faint); }
+
+.step{ display: grid; grid-template-columns: 32px 1fr; gap: 16px; margin-bottom: 18px; }
+.step-num{ font-family: var(--font-mono); font-size: 0.85rem; color: var(--gold); border: 1px solid var(--gold-line); border-radius: 50%; width: 30px; height: 30px; display: grid; place-items: center; flex-shrink: 0; }
+.step-body p{ margin: 4px 0 0; font-size: 0.9rem; }
+.step-body h4{ margin: 0; }
+
+footer{ grid-column: 1 / -1; margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+@media (max-width: 900px){
+  .shell{ grid-template-columns: 1fr; padding: 40px 20px 80px; gap: 36px; }
+  .toc{ position: static; max-height: none; }
+  .toc ol{ display: flex; flex-wrap: wrap; gap: 8px 18px; }
+  .status-grid{ grid-template-columns: 1fr; }
+  .arch{ flex-direction: column; }
+  .arch-arrow{ transform: rotate(90deg); }
+}
+</style>
+
+<div class="shell">
+
+  <div class="masthead">
+    <div class="eyebrow">Vault Easy — Engineering Documentation</div>
+    <h1>Project documentation</h1>
+    <p class="dek">A complete reference for how this project is built, how to run it, how the admin verification workflow works, and what's done versus what's still pending.</p>
+    <div class="meta">
+      <span class="tag is-ok">Marketing site: complete</span>
+      <span class="tag is-ok">Registration + KYC: complete</span>
+      <span class="tag is-ok">Admin panel: complete</span>
+      <span class="tag is-warn">Production hosting: not yet deployed</span>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <ol>
+      <li><a href="#overview">Project overview</a></li>
+      <li><a href="#architecture">Architecture</a></li>
+      <li><a href="#stack">Technology stack</a></li>
+      <li><a href="#structure">Folder structure</a></li>
+      <li><a href="#features">Key features</a></li>
+      <li><a href="#admin-login">Admin: signing in</a></li>
+      <li><a href="#admin-review">Admin: review &amp; approve</a></li>
+      <li><a href="#local">Running locally</a></li>
+      <li><a href="#production">Running in production</a></li>
+      <li><a href="#config">Environment configuration</a></li>
+      <li><a href="#status">Project status</a></li>
+    </ol>
+  </nav>
+
+  <article>
+
+    <section id="overview">
+      <p class="lead">Vault Easy's site is two things working together: a marketing site describing the brokerage, and a real client onboarding system — registration, KYC document collection, and admin-reviewed verification — built on plain PHP and MySQL.</p>
+      <p>It's deliberately framework-free on both ends: vanilla HTML/CSS/JS for the front end, vanilla PHP for the back end. The backend stack (PHP + MySQL) was chosen specifically because the project's next planned phase is a conversion into WordPress, which runs on the same stack — so this work carries forward rather than being thrown away later.</p>
+    </section>
+
+    <section id="architecture">
+      <div class="section-kicker">How the pieces fit together</div>
+      <h2>Architecture</h2>
+      <p>The front end never talks to the database directly — every read or write goes through a PHP endpoint under <code>/backend</code>, called via <code>fetch()</code> from <code>assets/js/account.js</code>.</p>
+
+      <div class="arch">
+        <div class="arch-node">
+          <div class="arch-box">Browser<br>HTML/CSS/JS</div>
+          <div class="arch-caption">Client &amp; admin UI</div>
+        </div>
+        <div class="arch-arrow">⇄</div>
+        <div class="arch-node">
+          <div class="arch-box">Apache + PHP 8.2<br>backend/*.php</div>
+          <div class="arch-caption">Session auth, validation</div>
+        </div>
+        <div class="arch-arrow">⇄</div>
+        <div class="arch-node">
+          <div class="arch-box">MySQL<br>vault_easy</div>
+          <div class="arch-caption">applications, admin_users</div>
+        </div>
+      </div>
+
+      <p>Two things make the verification workflow secure rather than cosmetic:</p>
+      <ul class="plain">
+        <li><strong>Two separate session keys</strong> — <code>$_SESSION['applicant_id']</code> and <code>$_SESSION['admin_id']</code> — so an applicant session can never pass an admin check.</li>
+        <li><strong>Every admin endpoint checks <code>require_admin()</code> first</strong>, before touching any data. That function call is the actual security boundary — not anything the front end shows or hides. See <code>backend/admin-decision.php</code>.</li>
+      </ul>
+      <p>Uploaded documents (CNIC images, proof of address) are stored under <code>backend/uploads/&lt;field&gt;/&lt;random-hex&gt;.&lt;ext&gt;</code>, a directory with its own <code>.htaccess</code> denying all direct web access. The only way to ever view one is <code>backend/file.php</code>, which checks the requester is either the owning applicant or a signed-in admin before streaming the file.</p>
+    </section>
+
+    <section id="stack">
+      <div class="section-kicker">What this is built with</div>
+      <h2>Technology stack</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+          <tbody>
+            <tr><td class="who">Markup / styling</td><td>HTML5, CSS3 — custom-property design tokens, no CSS framework</td></tr>
+            <tr><td class="who">Fonts</td><td><code>Space Grotesk</code> (display), <code>Inter</code> (body), <code>JetBrains Mono</code> (labels/data) — Google Fonts with system-font fallback stacks</td></tr>
+            <tr><td class="who">Front-end JS</td><td>Vanilla ES2020+, no framework, no bundler, no npm</td></tr>
+            <tr><td class="who">Back end</td><td>PHP 8.2, no framework</td></tr>
+            <tr><td class="who">Database</td><td>MySQL (InnoDB) via PDO, prepared statements throughout</td></tr>
+            <tr><td class="who">Auth</td><td>PHP native sessions, <code>password_hash()</code> / <code>password_verify()</code> (bcrypt)</td></tr>
+            <tr><td class="who">Local server</td><td>Apache 2.4 via XAMPP 8.2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>No React/Vue/Angular, no Bootstrap/Tailwind, no Node.js backend, no ORM. Everything is hand-written by design, to stay simple and to map cleanly onto WordPress later.</p>
+    </section>
+
+    <section id="structure">
+      <div class="section-kicker">Where things live</div>
+      <h2>Folder structure</h2>
+      <pre>Trading/
+├── index.html, about.html, services.html, markets.html,
+│   platforms.html, accounts.html, faq.html, contact.html   <span class="c">Marketing pages</span>
+├── open-account.html          <span class="c">5-step registration wizard</span>
+├── dashboard.html              <span class="c">Client dashboard (login-gated)</span>
+├── admin.html                  <span class="c">Admin verification panel (login-gated)</span>
+│
+├── assets/
+│   ├── css/
+│   │   ├── main.css             <span class="c">Site-wide styles, design tokens</span>
+│   │   ├── account.css          <span class="c">Registration/dashboard/admin styles</span>
+│   │   └── whatsapp-button.css  <span class="c">Floating WhatsApp button</span>
+│   ├── js/
+│   │   ├── main.js              <span class="c">Nav, hero chart, FAQ, sparklines</span>
+│   │   ├── account.js           <span class="c">All backend API calls live here</span>
+│   │   └── whatsapp-button.js   <span class="c">Optional, not currently linked</span>
+│   └── images/                  <span class="c">Logo + 14 licensed stock photos</span>
+│
+└── backend/
+    ├── README.md                 <span class="c">Backend-specific setup + security notes</span>
+    ├── config.php                 <span class="c">Session setup, DB config, auth helpers</span>
+    ├── db.php, schema.sql          <span class="c">PDO connection, table definitions</span>
+    ├── uploads.php                <span class="c">Shared file-upload validation</span>
+    ├── register.php, login.php,
+    │   logout.php, me.php,
+    │   update-profile.php         <span class="c">Applicant-facing endpoints</span>
+    ├── admin-login.php, admin-logout.php,
+    │   admin-list.php, admin-detail.php,
+    │   admin-decision.php         <span class="c">Admin-only endpoints</span>
+    ├── file.php                    <span class="k">Auth-gated document viewer</span>
+    ├── seed-admin.php             <span class="c">One-time first-admin creation script</span>
+    └── uploads/                    <span class="c">Uploaded documents (contains real PII once in use)</span></pre>
+    </section>
+
+    <section id="features">
+      <div class="section-kicker">What's actually built</div>
+      <h2>Key features</h2>
+
+      <h3>Marketing site</h3>
+      <ul class="plain">
+        <li>Fully responsive dark/gold premium fintech theme</li>
+        <li>Animated hero with a live-scrolling candlestick chart (canvas-drawn) and synced price/24h stats</li>
+        <li>Pure-CSS mobile navigation — works even if JavaScript fails to load</li>
+        <li>Licensed stock photography throughout; floating WhatsApp contact button site-wide</li>
+      </ul>
+
+      <h3>Registration (open-account.html)</h3>
+      <ul class="plain">
+        <li>5 steps: Personal Info → Identity/CNIC → KYC Profile → Bank Details → Documents &amp; Review</li>
+        <li>CNIC auto-formats as you type (<code>12345-1234567-1</code>)</li>
+        <li>File uploads validated server-side by <strong>actual file content</strong> (<code>finfo_file()</code>), not filename or claimed type</li>
+        <li>Full client + server validation (age 18+, CNIC format/expiry, email, phone) — server-side is the real boundary</li>
+        <li>Success modal with close button, broker-name note, and a cancellable auto-redirect to the mobile app download</li>
+      </ul>
+
+      <h3>Client dashboard (dashboard.html)</h3>
+      <ul class="plain">
+        <li>Real login against the <code>applications</code> table</li>
+        <li>Profile overview with CNIC/account number masked for display</li>
+        <li>Verification status tracker (Submitted → Under Review → Verified/Rejected), with rejection reason shown when applicable</li>
+        <li>Document list with auth-checked "View" links</li>
+        <li>Edit profile for basic fields — CNIC/bank details are intentionally not editable here</li>
+      </ul>
+
+      <h3>Admin panel (admin.html)</h3>
+      <ul class="plain">
+        <li>Separate admin login, distinct from client accounts</li>
+        <li>Filterable verification queue (All / Under Review / Verified / Rejected)</li>
+        <li>Full review screen: personal info, CNIC + both images inline, KYC profile, bank details, supporting documents</li>
+        <li>Approve (one click) or Reject (reason required, shown to the applicant)</li>
+        <li>Review history — who decided, and when</li>
+      </ul>
+    </section>
+
+    <section id="admin-login">
+      <div class="section-kicker">Getting into the system</div>
+      <h2>Admin: signing in</h2>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Go to the admin panel</h4><p>Navigate to <code>http://localhost/vaulteasy/admin.html</code> locally (or the production URL once deployed).</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Enter credentials</h4><p>Default account created by <code>backend/seed-admin.php</code>: username <code>admin</code>, password <code>ChangeMe123!</code>.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Session starts</h4><p>Signing in sets <code>$_SESSION['admin_id']</code>, checked by every admin endpoint. "Sign Out" destroys it entirely.</p></div></div>
+
+      <div class="callout is-warn">
+        <div class="callout-head"><svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Change the default password</div>
+        <p>This is a seed value, not a real credential. There's no in-app "change password" screen yet — update it via phpMyAdmin or a small script calling <code>password_hash()</code> against <code>admin_users.password_hash</code>.</p>
+      </div>
+      <p>There is intentionally no self-service admin registration. New admin accounts are created directly in the database, never through a public form.</p>
+    </section>
+
+    <section id="admin-review">
+      <div class="section-kicker">The actual verification workflow</div>
+      <h2>Admin: review, verify, and approve</h2>
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Open the queue</h4><p>Every submitted application, newest first — name, email, date, status, and reviewer if any. Filter with the pill buttons.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Click into a review</h4><p>See personal info, CNIC number plus <strong>View CNIC front / back</strong> (opens the actual uploaded image), KYC profile including the PEP flag, bank details, and supporting documents.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Decide</h4><p><strong>Approve</strong> — one click, sets status to Verified immediately. <strong>Reject…</strong> — requires a written reason, stored and shown to the applicant so they can fix and resubmit.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h4>It's logged</h4><p>Every decision records the reviewing admin's ID and a timestamp (<code>reviewed_by</code>, <code>reviewed_at</code>). Once decided, the panel shows history instead of action buttons.</p></div></div>
+    </section>
+
+    <section id="local">
+      <div class="section-kicker">Getting it running</div>
+      <h2>Running the project locally</h2>
+      <pre><span class="c"># 1. Install XAMPP (PHP 8.2 + MySQL + Apache)</span>
+winget install ApacheFriends.Xampp.8.2
+
+<span class="c"># 2. Point Apache at this project folder — add to httpd.conf:</span>
+<span class="k">Alias</span> /vaulteasy "C:/path/to/this/project"
+<span class="k">&lt;Directory</span> "C:/path/to/this/project"<span class="k">&gt;</span>
+    Options Indexes FollowSymLinks
+    AllowOverride All
+    Require all granted
+<span class="k">&lt;/Directory&gt;</span>
+
+<span class="c"># 3. Start services</span>
+C:\xampp\mysql_start.bat
+C:\xampp\apache_start.bat
+
+<span class="c"># 4. Import the schema</span>
+mysql -u root &lt; backend/schema.sql
+
+<span class="c"># 5. Create the first admin (visit once in a browser, then delete the file)</span>
+http://localhost/vaulteasy/backend/seed-admin.php
+
+<span class="c"># 6. Browse the site</span>
+http://localhost/vaulteasy/index.html</pre>
+      <p>The whole site must load through Apache this way — not as a <code>file://</code> path — since PHP only executes when served by a web server.</p>
+    </section>
+
+    <section id="production">
+      <div class="section-kicker">Not done yet</div>
+      <h2>Running in production</h2>
+      <div class="callout is-danger">
+        <div class="callout-head"><svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>Not deployed anywhere yet</div>
+        <p>This currently only runs on <code>localhost</code> via XAMPP. Nothing below has been done — it's the checklist for whenever real hosting is ready.</p>
+      </div>
+      <ul class="plain">
+        <li>Serve over <strong>HTTPS</strong>; set <code>'secure' =&gt; true</code> in the session cookie params in <code>backend/config.php</code></li>
+        <li>Move <code>DB_USER</code>/<code>DB_PASS</code> out of source control; use a dedicated MySQL user, not <code>root</code> with no password</li>
+        <li>Add rate-limiting to <code>login.php</code> and <code>admin-login.php</code></li>
+        <li>Add real email notifications on approve/reject</li>
+        <li>Change the default admin password</li>
+        <li>Confirm the production server also blocks direct access to <code>backend/uploads/</code></li>
+        <li>Decide on the WordPress conversion before investing further in this stand-alone version, if that's still the plan</li>
+      </ul>
+    </section>
+
+    <section id="config">
+      <div class="section-kicker">backend/config.php</div>
+      <h2>Environment configuration</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Setting</th><th>Current value</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="who">DB_HOST</td><td><code>127.0.0.1</code></td><td></td></tr>
+            <tr><td class="who">DB_NAME</td><td><code>vault_easy</code></td><td></td></tr>
+            <tr><td class="who">DB_USER / DB_PASS</td><td><code>root</code> / empty</td><td>Must change for any real deployment</td></tr>
+            <tr><td class="who">UPLOAD_ROOT</td><td><code>backend/uploads</code></td><td>Outside any directly-servable path</td></tr>
+            <tr><td class="who">MAX_UPLOAD_BYTES</td><td>5MB</td><td>Matches the front-end's own check</td></tr>
+            <tr><td class="who">ALLOWED_UPLOAD_TYPES</td><td>JPEG, PNG, PDF</td><td>Checked by file content, not extension</td></tr>
+            <tr><td class="who">Session cookie</td><td><code>httponly</code>, <code>SameSite=Lax</code></td><td>Add <code>secure: true</code> once on HTTPS</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>No <code>.env</code> file is used yet — introducing one is the single most important thing to do before production, so real credentials never risk being committed.</p>
+    </section>
+
+    <section id="status">
+      <div class="section-kicker">Where things stand</div>
+      <h2>Project status</h2>
+      <div class="status-grid">
+        <div class="status-card is-done">
+          <h4>✓ Completed</h4>
+          <ul>
+            <li>Full 8-page marketing site</li>
+            <li>Registration wizard, client + server validation</li>
+            <li>Real client login + dashboard</li>
+            <li>Full admin panel: queue, review, decisions</li>
+            <li>Secure document upload &amp; viewing</li>
+            <li>Verified end-to-end in a real browser</li>
+          </ul>
+        </div>
+        <div class="status-card is-pending">
+          <h4>○ Known gaps</h4>
+          <ul>
+            <li>Admin password still the seed default</li>
+            <li>No password reset (either role)</li>
+            <li>No email notifications</li>
+            <li>No login rate-limiting</li>
+            <li>Dashboard doc "Replace" button not wired</li>
+            <li>Footer legal links still placeholders</li>
+            <li>Real contact details still pending</li>
+            <li>Testimonials still illustrative, not real</li>
+            <li>No automated test suite</li>
+            <li>Not deployed anywhere</li>
+          </ul>
+        </div>
+        <div class="status-card is-future">
+          <h4>→ Likely next</h4>
+          <ul>
+            <li>WordPress conversion (stated next phase)</li>
+            <li>Real production hosting</li>
+            <li>Email notifications</li>
+            <li>Password reset flows</li>
+            <li>Rate limiting</li>
+            <li>HTTPS + secure cookies</li>
+            <li>Working document re-upload</li>
+            <li>Automated testing</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </article>
+
+  <footer>
+    <span>Vault Easy — Project Documentation</span>
+    <span>See also: backend/README.md</span>
+  </footer>
+
+</div>
