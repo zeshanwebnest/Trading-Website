@@ -218,6 +218,20 @@
       modal.classList.add('is-open');
       const countdownEl = modal.querySelector('#redirect-countdown');
       let seconds = 4;
+      let redirectTimer = null;
+
+      const closeModal = () => {
+        modal.classList.remove('is-open');
+        if (redirectTimer) clearTimeout(redirectTimer);
+        document.removeEventListener('keydown', onKeydown);
+      };
+      const onKeydown = (e) => { if (e.key === 'Escape') closeModal(); };
+
+      const closeBtn = modal.querySelector('#modal-close');
+      if (closeBtn) closeBtn.addEventListener('click', closeModal, { once: true });
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); }, { once: true });
+      document.addEventListener('keydown', onKeydown);
+
       const tick = () => {
         if (countdownEl) countdownEl.textContent = String(seconds);
         if (seconds <= 0) {
@@ -225,7 +239,7 @@
           return;
         }
         seconds -= 1;
-        setTimeout(tick, 1000);
+        redirectTimer = setTimeout(tick, 1000);
       };
       tick();
     };

@@ -246,6 +246,7 @@
 @keyframes modal-fade-in{ from{ opacity: 0; } to{ opacity: 1; } }
 
 .success-modal{
+  position: relative;
   max-width: 440px;
   width: 100%;
   background: linear-gradient(180deg, var(--panel-raised), var(--panel));
@@ -256,6 +257,38 @@
   box-shadow: 0 40px 100px -30px rgba(0,0,0,0.8);
   animation: modal-pop-in .4s var(--ease);
 }
+.modal-close{
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-line);
+  background: var(--panel-raised);
+  color: var(--ink-dim);
+  font-size: 1.3rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.modal-close:hover, .modal-close:focus-visible{
+  border-color: var(--gold-dim);
+  color: var(--gold);
+  background: var(--gold-wash);
+  outline: none;
+}
+.modal-note{
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: var(--gold-wash);
+  border: 1px solid var(--gold-line);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--ink-dim);
+}
+.modal-note b{ color: var(--gold); }
 @media (prefers-reduced-motion: reduce){
   .modal-overlay.is-open, .success-modal{ animation: none; }
 }
