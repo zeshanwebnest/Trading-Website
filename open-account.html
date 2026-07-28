@@ -35,7 +35,7 @@
   </div>
 </nav>
 
-<div class="proto-banner">Design prototype — this form is <b>not yet connected to a live backend</b>. Submitted data is stored only in this browser for preview purposes.</div>
+<div class="proto-banner">Local development environment — connected to a real database at <b>localhost</b>. Not yet deployed to production hosting.</div>
 
 <header class="page-header">
   <div class="container platform-wrap">
@@ -82,6 +82,16 @@
             <div class="form-field">
               <label for="phone">Phone number</label>
               <input type="tel" id="phone" placeholder="+92 300 1234567">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="password">Password</label>
+              <input type="password" id="password" placeholder="At least 8 characters" autocomplete="new-password">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="confirmPassword">Confirm password</label>
+              <input type="password" id="confirmPassword" placeholder="Re-enter password" autocomplete="new-password">
               <span class="field-error"></span>
             </div>
             <div class="form-field">
@@ -316,6 +326,7 @@
         </div>
 
       </form>
+      <p style="text-align:center; margin-top:24px; font-size:0.9rem;">Already have an account? <a href="dashboard.html" style="color:var(--gold);">Sign in</a></p>
     </div>
   </div>
 </section>

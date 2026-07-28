@@ -1,20 +1,23 @@
 /* ==========================================================================
    Vault Easy — Open Account wizard + Client Dashboard
-   Front-end only: this is a working UI/UX prototype of the registration and
-   dashboard flow. There is no backend yet, so submitted data (including
-   CNIC/bank fields) is saved to this browser's localStorage only — not
-   encrypted, not sent anywhere, and cleared if the user clears site data.
-   It exists so the flow and design can be reviewed before any real,
-   security-reviewed backend is built to replace this storage layer.
+   Talks to the real PHP/MySQL backend under /backend — registration, login,
+   and profile data all go through the API (see backend/README.md), not
+   localStorage. Requires the site to be served over http(s), e.g. via
+   XAMPP's Apache, not opened directly as a file:// path.
    ========================================================================== */
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'vaultEasyAccount';
-
   const escapeHTML = (str) => String(str).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
   }[c]));
+
+  const api = async (url, options = {}) => {
+    const res = await fetch(url, { credentials: 'include', ...options });
+    let data = {};
+    try { data = await res.json(); } catch (err) { /* empty body */ }
+    return { ok: res.ok, status: res.status, data };
+  };
 
   /* =====================================================================
      Registration wizard (open-account.html)
@@ -96,6 +99,11 @@
       fullName: (el) => (el.value.trim().length >= 3 ? '' : 'Enter your full legal name.'),
       email: (el) => (isValidEmail(el.value.trim()) ? '' : 'Enter a valid email address.'),
       phone: (el) => (isValidPhone(el.value.trim()) ? '' : 'Enter a valid phone number.'),
+      password: (el) => (el.value.length >= 8 ? '' : 'Password must be at least 8 characters.'),
+      confirmPassword: (el) => {
+        const pw = document.getElementById('password');
+        return el.value === (pw ? pw.value : '') ? '' : 'Passwords do not match.';
+      },
       dob: (el) => (el.value && isAdult(el.value) ? '' : 'You must be at least 18 years old.'),
       nationality: (el) => (el.value.trim() ? '' : 'Nationality is required.'),
       addrStreet: (el) => (el.value.trim() ? '' : 'Street address is required.'),
@@ -146,28 +154,6 @@
     const getFileName = (id) => { const el = document.getElementById(id); return el && el.files[0] ? el.files[0].name : ''; };
     const getSelectedText = (id) => { const el = document.getElementById(id); return el && el.selectedOptions[0] ? el.selectedOptions[0].textContent : ''; };
 
-    const collectRecord = () => ({
-      personal: {
-        fullName: getVal('fullName'), email: getVal('email'), phone: getVal('phone'), dob: getVal('dob'),
-        nationality: getVal('nationality'),
-        address: { street: getVal('addrStreet'), city: getVal('addrCity'), country: getSelectedText('addrCountry'), postal: getVal('addrPostal') },
-      },
-      identity: {
-        cnicNumber: getVal('cnicNumber'), cnicExpiry: getVal('cnicExpiry'),
-        cnicFrontName: getFileName('cnicFront'), cnicBackName: getFileName('cnicBack'),
-      },
-      kyc: {
-        occupation: getVal('occupation'), sourceOfFunds: getSelectedText('sourceOfFunds'),
-        annualIncome: getSelectedText('annualIncome'), tradingExperience: getSelectedText('tradingExperience'),
-        isPEP: (document.querySelector('input[name="pep"]:checked') || {}).value === 'yes',
-      },
-      bank: {
-        bankName: getVal('bankName'), accountTitle: getVal('accountTitle'),
-        accountNumber: getVal('accountNumber'), swiftCode: getVal('swiftCode'),
-      },
-      documents: { proofOfAddressName: getFileName('proofOfAddress'), additionalDocName: getFileName('additionalDoc') },
-    });
-
     const renderRows = (listId, entries) => {
       const list = document.getElementById(listId);
       if (!list) return;
@@ -177,27 +163,26 @@
     };
 
     const buildReview = () => {
-      const r = collectRecord();
       renderRows('review-personal', [
-        ['Full name', r.personal.fullName], ['Email', r.personal.email], ['Phone', r.personal.phone],
-        ['Date of birth', r.personal.dob], ['Nationality', r.personal.nationality],
-        ['Address', `${r.personal.address.street}, ${r.personal.address.city}, ${r.personal.address.country} ${r.personal.address.postal}`.trim()],
+        ['Full name', getVal('fullName')], ['Email', getVal('email')], ['Phone', getVal('phone')],
+        ['Date of birth', getVal('dob')], ['Nationality', getVal('nationality')],
+        ['Address', `${getVal('addrStreet')}, ${getVal('addrCity')}, ${getSelectedText('addrCountry')} ${getVal('addrPostal')}`.trim()],
       ]);
       renderRows('review-identity', [
-        ['CNIC number', r.identity.cnicNumber], ['CNIC expiry', r.identity.cnicExpiry],
-        ['CNIC front', r.identity.cnicFrontName], ['CNIC back', r.identity.cnicBackName],
+        ['CNIC number', getVal('cnicNumber')], ['CNIC expiry', getVal('cnicExpiry')],
+        ['CNIC front', getFileName('cnicFront')], ['CNIC back', getFileName('cnicBack')],
       ]);
       renderRows('review-kyc', [
-        ['Occupation', r.kyc.occupation], ['Source of funds', r.kyc.sourceOfFunds],
-        ['Annual income', r.kyc.annualIncome], ['Trading experience', r.kyc.tradingExperience],
-        ['Politically exposed person', r.kyc.isPEP ? 'Yes' : 'No'],
+        ['Occupation', getVal('occupation')], ['Source of funds', getSelectedText('sourceOfFunds')],
+        ['Annual income', getSelectedText('annualIncome')], ['Trading experience', getSelectedText('tradingExperience')],
+        ['Politically exposed person', (document.querySelector('input[name="pep"]:checked') || {}).value === 'yes' ? 'Yes' : 'No'],
       ]);
       renderRows('review-bank', [
-        ['Bank name', r.bank.bankName], ['Account title', r.bank.accountTitle],
-        ['Account number / IBAN', r.bank.accountNumber], ['SWIFT / branch code', r.bank.swiftCode],
+        ['Bank name', getVal('bankName')], ['Account title', getVal('accountTitle')],
+        ['Account number / IBAN', getVal('accountNumber')], ['SWIFT / branch code', getVal('swiftCode')],
       ]);
       renderRows('review-docs', [
-        ['Proof of address', r.documents.proofOfAddressName], ['Additional document', r.documents.additionalDocName],
+        ['Proof of address', getFileName('proofOfAddress')], ['Additional document', getFileName('additionalDoc')],
       ]);
     };
 
@@ -244,19 +229,58 @@
       tick();
     };
 
-    regForm.addEventListener('submit', (e) => {
+    const submitError = (message) => {
+      let banner = document.getElementById('reg-submit-error');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'reg-submit-error';
+        banner.className = 'callout is-danger';
+        banner.style.marginTop = '20px';
+        steps[steps.length - 1].insertBefore(banner, steps[steps.length - 1].querySelector('.reg-actions'));
+      }
+      banner.textContent = message;
+      banner.style.display = 'block';
+    };
+
+    regForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!validateStep(steps[steps.length - 1])) return;
-      const record = collectRecord();
-      record.status = 'Submitted';
-      record.submittedAt = new Date().toISOString();
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
-      } catch (err) {
-        // Private browsing / storage quota — the demo still completes the
-        // on-screen flow, it just won't be there for the dashboard to read.
+
+      const submitBtn = regForm.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Creating account…'; }
+
+      const isPEPChecked = document.querySelector('input[name="pep"]:checked');
+      const formData = new FormData();
+      ['fullName', 'email', 'phone', 'password', 'dob', 'nationality', 'addrStreet', 'addrCity',
+        'addrCountry', 'addrPostal', 'cnicNumber', 'cnicExpiry', 'occupation', 'sourceOfFunds',
+        'annualIncome', 'tradingExperience', 'bankName', 'accountTitle', 'accountNumber', 'swiftCode',
+      ].forEach((id) => formData.append(id, getVal(id)));
+      formData.append('isPEP', isPEPChecked ? isPEPChecked.value : 'no');
+      ['cnicFront', 'cnicBack', 'proofOfAddress', 'additionalDoc'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.files[0]) formData.append(id, el.files[0]);
+      });
+
+      const { ok, status, data } = await api('backend/register.php', { method: 'POST', body: formData });
+
+      if (ok) {
+        openSuccessModal();
+        return;
       }
-      openSuccessModal();
+
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Create Account'; }
+
+      if (status === 409 && data.fields && data.fields.email) {
+        showStep(0);
+        setError(document.getElementById('email'), data.fields.email);
+        submitError('An account with this email already exists — sign in instead, or use a different email.');
+        return;
+      }
+      if (status === 422 && data.fields) {
+        submitError('Some details need fixing before this can be submitted. Please check earlier steps.');
+        return;
+      }
+      submitError(data.error || 'Something went wrong. Please try again.');
     });
 
     showStep(0);
@@ -265,88 +289,164 @@
   /* =====================================================================
      Client dashboard (dashboard.html)
      ===================================================================== */
-  const dashShell = document.querySelector('.dash-shell');
-  if (dashShell) {
-    let account = null;
-    try { account = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null'); } catch (err) { account = null; }
-
+  const dashRoot = document.getElementById('dash-root');
+  if (dashRoot) {
+    const loginPanel = document.getElementById('dash-login');
     const emptyState = document.getElementById('dash-empty-state');
     const content = document.getElementById('dash-content');
+    const showOnly = (el) => {
+      [loginPanel, emptyState, content].forEach((node) => {
+        if (node) node.style.display = node === el ? (el === content ? 'grid' : 'block') : 'none';
+      });
+    };
 
-    if (!account) {
-      if (emptyState) emptyState.style.display = 'block';
-      if (content) content.style.display = 'none';
-    } else {
-      if (emptyState) emptyState.style.display = 'none';
-      if (content) content.style.display = 'grid';
+    const fieldLabel = (value) => value || '—';
 
+    const renderAccount = (a) => {
       const profileList = document.getElementById('profile-overview-list');
       if (profileList) {
-        const a = account.personal, id = account.identity, kyc = account.kyc, bank = account.bank;
-        const maskedCnic = id.cnicNumber ? id.cnicNumber.replace(/\d(?=\d{4})/g, '•') : '—';
-        const maskedAccount = bank.accountNumber ? bank.accountNumber.replace(/.(?=.{4})/g, '•') : '—';
+        const maskedCnic = a.cnic_number ? a.cnic_number.replace(/\d(?=\d{4})/g, '•') : '—';
+        const maskedAccount = a.account_number ? a.account_number.replace(/.(?=.{4})/g, '•') : '—';
         profileList.innerHTML = [
-          ['Full name', a.fullName], ['Email', a.email], ['Phone', a.phone],
+          ['Full name', a.full_name], ['Email', a.email], ['Phone', a.phone],
           ['Date of birth', a.dob], ['Nationality', a.nationality],
-          ['Address', `${a.address.street}, ${a.address.city}, ${a.address.country} ${a.address.postal}`.trim()],
-          ['CNIC number', maskedCnic], ['Occupation', kyc.occupation],
-          ['Bank', bank.bankName], ['Account number', maskedAccount],
-        ].map(([label, value]) => `<li><span>${escapeHTML(label)}</span><span>${escapeHTML(value || '—')}</span></li>`).join('');
+          ['Address', `${a.addr_street}, ${a.addr_city}, ${a.addr_country} ${a.addr_postal || ''}`.trim()],
+          ['CNIC number', maskedCnic], ['Occupation', a.occupation],
+          ['Bank', a.bank_name], ['Account number', maskedAccount],
+        ].map(([label, value]) => `<li><span>${escapeHTML(label)}</span><span>${escapeHTML(fieldLabel(value))}</span></li>`).join('');
       }
 
       const statusBadge = document.getElementById('status-badge');
-      if (statusBadge) statusBadge.textContent = account.status || 'Submitted';
+      const statusLabels = { under_review: 'Under Review', verified: 'Verified', rejected: 'Rejected' };
+      if (statusBadge) statusBadge.textContent = statusLabels[a.status] || a.status;
+
+      const tracker = document.getElementById('verify-tracker');
+      if (tracker) {
+        const stepEls = tracker.querySelectorAll('.verify-step');
+        stepEls.forEach((el) => el.classList.remove('is-current', 'is-complete'));
+        if (a.status === 'rejected') {
+          stepEls[0].classList.add('is-complete');
+          tracker.dataset.rejected = 'true';
+        } else {
+          stepEls[0].classList.add('is-complete');
+          if (a.status === 'verified') {
+            stepEls[1].classList.add('is-complete');
+            stepEls[2].classList.add('is-complete');
+          } else {
+            stepEls[1].classList.add('is-current');
+          }
+        }
+      }
+      const rejectionNote = document.getElementById('rejection-note');
+      if (rejectionNote) {
+        if (a.status === 'rejected' && a.rejection_reason) {
+          rejectionNote.style.display = 'block';
+          rejectionNote.querySelector('span').textContent = a.rejection_reason;
+        } else {
+          rejectionNote.style.display = 'none';
+        }
+      }
 
       const docList = document.getElementById('doc-list');
       if (docList) {
         const docs = [
-          ['CNIC (front)', account.identity.cnicFrontName],
-          ['CNIC (back)', account.identity.cnicBackName],
-          ['Proof of address', account.documents.proofOfAddressName],
-          ['Additional document', account.documents.additionalDocName],
-        ].filter(([, name]) => name);
-        docList.innerHTML = docs.map(([label, name]) => `
+          ['CNIC (front)', 'cnic_front', a.cnic_front_path],
+          ['CNIC (back)', 'cnic_back', a.cnic_back_path],
+          ['Proof of address', 'proof_of_address', a.proof_of_address_path],
+          ['Additional document', 'additional_doc', a.additional_doc_path],
+        ].filter(([, , path]) => path);
+        docList.innerHTML = docs.map(([label, field, path]) => `
           <li class="doc-item">
             <span class="doc-item-name">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>
-              <span><b>${escapeHTML(label)}</b><small>${escapeHTML(name)}</small></span>
+              <span><b>${escapeHTML(label)}</b><small>${escapeHTML(path.split('/').pop())}</small></span>
             </span>
-            <button type="button" class="btn btn-ghost btn-sm">Replace</button>
+            <a class="btn btn-ghost btn-sm" href="backend/file.php?id=${a.id}&field=${field}" target="_blank" rel="noopener">View</a>
           </li>`).join('');
       }
 
       const editForm = document.getElementById('edit-profile-form');
       if (editForm) {
-        const a = account.personal;
         ['fullName', 'email', 'phone', 'dob', 'nationality'].forEach((field) => {
           const el = editForm.querySelector('#edit-' + field);
-          if (el) el.value = a[field] || '';
+          const key = field.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
+          if (el) el.value = a[key] || '';
         });
-        const streetEl = editForm.querySelector('#edit-addrStreet');
-        if (streetEl) streetEl.value = a.address.street || '';
-        const cityEl = editForm.querySelector('#edit-addrCity');
-        if (cityEl) cityEl.value = a.address.city || '';
-        const postalEl = editForm.querySelector('#edit-addrPostal');
-        if (postalEl) postalEl.value = a.address.postal || '';
-
-        editForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          account.personal.fullName = editForm.querySelector('#edit-fullName').value;
-          account.personal.email = editForm.querySelector('#edit-email').value;
-          account.personal.phone = editForm.querySelector('#edit-phone').value;
-          account.personal.dob = editForm.querySelector('#edit-dob').value;
-          account.personal.nationality = editForm.querySelector('#edit-nationality').value;
-          account.personal.address.street = editForm.querySelector('#edit-addrStreet').value;
-          account.personal.address.city = editForm.querySelector('#edit-addrCity').value;
-          account.personal.address.postal = editForm.querySelector('#edit-addrPostal').value;
-          try { localStorage.setItem(STORAGE_KEY, JSON.stringify(account)); } catch (err) { /* ignore */ }
-          const note = document.getElementById('edit-save-note');
-          if (note) {
-            note.classList.add('is-visible');
-            setTimeout(() => note.classList.remove('is-visible'), 2400);
-          }
-        });
+        editForm.querySelector('#edit-addrStreet').value = a.addr_street || '';
+        editForm.querySelector('#edit-addrCity').value = a.addr_city || '';
+        editForm.querySelector('#edit-addrPostal').value = a.addr_postal || '';
       }
+    };
+
+    const loadAccount = async () => {
+      const { ok, data } = await api('backend/me.php');
+      if (ok) {
+        showOnly(content);
+        renderAccount(data);
+      } else {
+        showOnly(loginPanel || emptyState);
+      }
+    };
+
+    const loginForm = document.getElementById('dash-login-form');
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const errorEl = document.getElementById('login-error');
+        const { ok, data } = await api('backend/login.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        if (ok) {
+          if (errorEl) errorEl.style.display = 'none';
+          loadAccount();
+        } else if (errorEl) {
+          errorEl.textContent = data.error || 'Sign-in failed.';
+          errorEl.style.display = 'block';
+        }
+      });
+    }
+
+    const logoutBtn = document.getElementById('dash-logout');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        await api('backend/logout.php', { method: 'POST' });
+        loadAccount();
+      });
+    }
+
+    const editForm = document.getElementById('edit-profile-form');
+    if (editForm) {
+      editForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const payload = {
+          fullName: editForm.querySelector('#edit-fullName').value,
+          email: editForm.querySelector('#edit-email').value,
+          phone: editForm.querySelector('#edit-phone').value,
+          dob: editForm.querySelector('#edit-dob').value,
+          nationality: editForm.querySelector('#edit-nationality').value,
+          addrStreet: editForm.querySelector('#edit-addrStreet').value,
+          addrCity: editForm.querySelector('#edit-addrCity').value,
+          addrPostal: editForm.querySelector('#edit-addrPostal').value,
+        };
+        const { ok, data } = await api('backend/update-profile.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const note = document.getElementById('edit-save-note');
+        if (ok) {
+          if (note) { note.textContent = '✓ Changes saved'; note.classList.add('is-visible'); setTimeout(() => note.classList.remove('is-visible'), 2400); }
+          loadAccount();
+        } else if (note) {
+          note.textContent = data.error || 'Could not save changes.';
+          note.style.color = 'var(--danger, #d97a6c)';
+          note.classList.add('is-visible');
+        }
+      });
     }
 
     const navButtons = document.querySelectorAll('.dash-nav button');
@@ -360,5 +460,204 @@
         if (target) target.classList.add('is-active');
       });
     });
+
+    loadAccount();
+  }
+
+  /* =====================================================================
+     Admin panel (admin.html)
+     ===================================================================== */
+  const adminLoginPanel = document.getElementById('admin-login');
+  if (adminLoginPanel) {
+    const queuePanel = document.getElementById('admin-queue');
+    const detailPanel = document.getElementById('admin-detail');
+    const logoutBtn = document.getElementById('admin-logout');
+    let activeStatusFilter = '';
+    let activeApplicationId = null;
+
+    const showAdminView = (view) => {
+      [adminLoginPanel, queuePanel, detailPanel].forEach((el) => { el.style.display = 'none'; });
+      view.style.display = 'block';
+      logoutBtn.style.display = view === adminLoginPanel ? 'none' : 'inline-flex';
+    };
+
+    const statusLabel = { under_review: 'Under Review', verified: 'Verified', rejected: 'Rejected' };
+
+    const loadQueue = async () => {
+      const qs = activeStatusFilter ? `?status=${activeStatusFilter}` : '';
+      const { ok, data } = await api('backend/admin-list.php' + qs);
+      if (!ok) { showAdminView(adminLoginPanel); return; }
+
+      const body = document.getElementById('admin-queue-body');
+      const emptyMsg = document.getElementById('admin-queue-empty');
+      const rows = data.applications || [];
+      emptyMsg.style.display = rows.length ? 'none' : 'block';
+      body.innerHTML = rows.map((row) => `
+        <tr data-id="${row.id}">
+          <td class="who">${escapeHTML(row.full_name)}</td>
+          <td>${escapeHTML(row.email)}</td>
+          <td>${escapeHTML(new Date(row.submitted_at).toLocaleString())}</td>
+          <td><span class="status-badge is-${row.status}">${statusLabel[row.status] || row.status}</span></td>
+          <td>${escapeHTML(row.reviewed_by_name || '—')}</td>
+        </tr>`).join('');
+
+      body.querySelectorAll('tr').forEach((tr) => {
+        tr.addEventListener('click', () => loadDetail(Number(tr.dataset.id)));
+      });
+      showAdminView(queuePanel);
+    };
+
+    const docLink = (label, field, id, path) => {
+      if (!path) return '';
+      return `<a href="backend/file.php?id=${id}&field=${field}" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        ${escapeHTML(label)}</a>`;
+    };
+
+    const renderList = (listId, entries) => {
+      document.getElementById(listId).innerHTML = entries.map(([label, value]) =>
+        `<li><span>${escapeHTML(label)}</span><span>${escapeHTML(value === null || value === undefined || value === '' ? '—' : String(value))}</span></li>`
+      ).join('');
+    };
+
+    const loadDetail = async (id) => {
+      const { ok, data: a } = await api(`backend/admin-detail.php?id=${id}`);
+      if (!ok) return;
+      activeApplicationId = id;
+
+      document.getElementById('detail-name').textContent = a.full_name;
+      const statusBadge = document.getElementById('detail-status');
+      statusBadge.textContent = statusLabel[a.status] || a.status;
+      statusBadge.className = 'status-badge is-' + a.status;
+
+      renderList('detail-personal', [
+        ['Email', a.email], ['Phone', a.phone], ['Date of birth', a.dob], ['Nationality', a.nationality],
+        ['Address', `${a.addr_street}, ${a.addr_city}, ${a.addr_country} ${a.addr_postal || ''}`.trim()],
+      ]);
+      renderList('detail-identity-text', [
+        ['CNIC number', a.cnic_number], ['CNIC expiry', a.cnic_expiry],
+      ]);
+      document.getElementById('detail-identity-docs').innerHTML =
+        docLink('View CNIC front', 'cnic_front', id, a.cnic_front_path) +
+        docLink('View CNIC back', 'cnic_back', id, a.cnic_back_path);
+      renderList('detail-kyc', [
+        ['Occupation', a.occupation], ['Source of funds', a.source_of_funds],
+        ['Annual income', a.annual_income], ['Trading experience', a.trading_experience],
+        ['Politically exposed person', a.is_pep == 1 ? 'Yes' : 'No'],
+      ]);
+      renderList('detail-bank', [
+        ['Bank name', a.bank_name], ['Account title', a.account_title],
+        ['Account number / IBAN', a.account_number], ['SWIFT / branch code', a.swift_code],
+      ]);
+      document.getElementById('detail-supporting-docs').innerHTML =
+        docLink('View proof of address', 'proof_of_address', id, a.proof_of_address_path) +
+        docLink('View additional document', 'additional_doc', id, a.additional_doc_path);
+
+      const reviewedInfo = document.getElementById('detail-reviewed-info');
+      if (a.reviewed_at) {
+        reviewedInfo.style.display = 'block';
+        renderList('detail-reviewed-list', [
+          ['Reviewed by', a.reviewed_by_name], ['Reviewed at', new Date(a.reviewed_at).toLocaleString()],
+          ...(a.status === 'rejected' ? [['Reason', a.rejection_reason]] : []),
+        ]);
+      } else {
+        reviewedInfo.style.display = 'none';
+      }
+
+      const decisionPanel = document.getElementById('detail-decision-panel');
+      const decisionNote = document.getElementById('decision-note');
+      const decisionActions = document.getElementById('decision-actions');
+      document.getElementById('reject-form').style.display = 'none';
+      document.getElementById('decision-error').style.display = 'none';
+      if (a.status === 'under_review') {
+        decisionNote.textContent = 'Review the documents above, then approve or reject this application.';
+        decisionActions.style.display = 'flex';
+      } else {
+        decisionNote.textContent = `This application has already been ${statusLabel[a.status].toLowerCase()} — no further action needed.`;
+        decisionActions.style.display = 'none';
+      }
+      decisionPanel.style.display = 'block';
+
+      showAdminView(detailPanel);
+    };
+
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('admin-username').value.trim();
+      const password = document.getElementById('admin-password').value;
+      const errorEl = document.getElementById('admin-login-error');
+      const { ok, data } = await api('backend/admin-login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+      if (ok) {
+        errorEl.style.display = 'none';
+        loadQueue();
+      } else {
+        errorEl.textContent = data.error || 'Sign-in failed.';
+        errorEl.style.display = 'block';
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      await api('backend/admin-logout.php', { method: 'POST' });
+      showAdminView(adminLoginPanel);
+    });
+
+    document.querySelectorAll('.pill-filter').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pill-filter').forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        activeStatusFilter = btn.dataset.status;
+        loadQueue();
+      });
+    });
+
+    document.getElementById('admin-back-to-queue').addEventListener('click', loadQueue);
+
+    document.getElementById('btn-approve').addEventListener('click', async () => {
+      const { ok, data } = await api('backend/admin-decision.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: activeApplicationId, decision: 'approve' }),
+      });
+      if (ok) loadDetail(activeApplicationId);
+      else {
+        const err = document.getElementById('decision-error');
+        err.textContent = data.error || 'Could not approve this application.';
+        err.style.display = 'block';
+      }
+    });
+
+    document.getElementById('btn-show-reject').addEventListener('click', () => {
+      document.getElementById('reject-form').style.display = 'block';
+    });
+    document.getElementById('btn-cancel-reject').addEventListener('click', () => {
+      document.getElementById('reject-form').style.display = 'none';
+    });
+    document.getElementById('btn-confirm-reject').addEventListener('click', async () => {
+      const reason = document.getElementById('reject-reason').value.trim();
+      const err = document.getElementById('decision-error');
+      if (!reason) {
+        err.textContent = 'A rejection reason is required.';
+        err.style.display = 'block';
+        return;
+      }
+      const { ok, data } = await api('backend/admin-decision.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: activeApplicationId, decision: 'reject', reason }),
+      });
+      if (ok) loadDetail(activeApplicationId);
+      else {
+        err.textContent = data.error || 'Could not reject this application.';
+        err.style.display = 'block';
+      }
+    });
+
+    // Land on the queue directly if a session is already active (e.g. a
+    // page refresh) instead of always showing the login form first.
+    loadQueue();
   }
 })();

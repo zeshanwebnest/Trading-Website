@@ -1,8 +1,8 @@
 /* ==========================================================================
-   Vault Easy — Open Account form + Client Dashboard
-   Modular, self-contained (like whatsapp-button.css). Linked only on
-   open-account.html and dashboard.html. Reuses main.css design tokens
-   (--gold, --void, --panel, --ink, --ease, .form-grid/.form-field/.btn).
+   Vault Easy — Open Account form, Client Dashboard, Admin panel
+   Modular, self-contained (like whatsapp-button.css). Linked on
+   open-account.html, dashboard.html, and admin.html. Reuses main.css design
+   tokens (--gold, --void, --panel, --ink, --ease, .form-grid/.form-field/.btn).
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -23,6 +23,22 @@
   z-index: 50;
 }
 .proto-banner b{ color: var(--gold); font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   Callouts (status/error banners)
+   -------------------------------------------------------------------------- */
+.callout{
+  border-radius: 8px;
+  border: 1px solid var(--panel-line);
+  background: var(--panel-raised);
+  color: var(--ink-dim);
+}
+.callout.is-danger{
+  border-color: rgba(217,122,108,0.35);
+  background: rgba(217,122,108,0.1);
+  color: #e8a99c;
+}
+.callout.is-danger b{ color: #e8a99c; }
 
 /* --------------------------------------------------------------------------
    Registration wizard shell
@@ -468,3 +484,81 @@
   .reg-progress-label{ display: none; }
   .upload-box{ flex-direction: column; text-align: center; }
 }
+
+/* --------------------------------------------------------------------------
+   Admin panel
+   -------------------------------------------------------------------------- */
+.admin-topbar{
+  border-bottom: 1px solid var(--panel-line);
+  padding: 18px 0;
+}
+.admin-topbar-inner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.admin-topbar .brand{ display: flex; align-items: center; gap: 12px; }
+.admin-badge{
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  border: 1px solid var(--gold-line);
+  background: var(--gold-wash);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+.admin-filter-row{ display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.pill-filter{
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--panel-line);
+  background: transparent;
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+}
+.pill-filter:hover{ border-color: var(--gold-dim); color: var(--ink); }
+.pill-filter.is-active{ border-color: var(--gold-line); background: var(--gold-wash); color: var(--gold); }
+
+.admin-table{ width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.admin-table th, .admin-table td{ text-align: left; padding: 16px 20px; border-bottom: 1px solid var(--panel-line); }
+.admin-table th{
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+  font-weight: 500;
+}
+.admin-table tbody tr{ cursor: pointer; transition: background .15s; }
+.admin-table tbody tr:hover{ background: var(--gold-wash); }
+.admin-table tbody tr:last-child td{ border-bottom: none; }
+.admin-table td{ color: var(--ink-dim); }
+.admin-table td.who{ color: var(--ink); }
+
+.status-badge.is-under_review{ color: var(--gold); border-color: var(--gold-line); background: var(--gold-wash); }
+.status-badge.is-verified{ color: var(--up); border-color: rgba(111,174,140,0.3); background: rgba(111,174,140,0.1); }
+.status-badge.is-rejected{ color: #e8a99c; border-color: rgba(217,122,108,0.35); background: rgba(217,122,108,0.1); }
+
+.admin-doc-row{ display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+.admin-doc-row a{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--panel-line);
+  background: var(--panel-raised);
+  color: var(--ink-dim);
+  transition: border-color .2s, color .2s;
+}
+.admin-doc-row a:hover{ border-color: var(--gold-dim); color: var(--gold); }
+.admin-doc-row a svg{ width: 15px; height: 15px; }
