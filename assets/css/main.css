@@ -15,8 +15,8 @@
   --gold-wash:   rgba(212,175,55,0.06);
 
   --ink:         #f1ede2;
-  --ink-dim:     #b6ae9c;
-  --ink-faint:   #857c68;
+  --ink-dim:     #bfb7a5;
+  --ink-faint:   #948a73;
 
   --up:          #6fae8c;
   --down:        #c26b5f;
@@ -28,8 +28,8 @@
   --rail: 1200px;
   --gap-sm: 12px;
   --gap-md: 24px;
-  --gap-lg: 48px;
-  --gap-xl: 96px;
+  --gap-lg: 40px;
+  --gap-xl: 64px;
 
   --ease: cubic-bezier(.16,.84,.44,1);
 }
@@ -50,8 +50,8 @@ body{
   background: var(--void);
   color: var(--ink);
   font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
+  font-size: 17px;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -1138,7 +1138,7 @@ body:has(.nav-check:checked){ overflow: hidden; }
    ========================================================================== */
 
 .page-header{
-  padding: 168px 0 72px;
+  padding: 148px 0 56px;
   position: relative;
   border-bottom: 1px solid var(--gold-line);
   background:

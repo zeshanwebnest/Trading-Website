@@ -1,0 +1,437 @@
+/* ==========================================================================
+   Vault Easy — Open Account form + Client Dashboard
+   Modular, self-contained (like whatsapp-button.css). Linked only on
+   open-account.html and dashboard.html. Reuses main.css design tokens
+   (--gold, --void, --panel, --ink, --ease, .form-grid/.form-field/.btn).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Prototype notice — a visible, honest banner reminding whoever is reviewing
+   this that submissions are not yet wired to a real backend. Intentional:
+   this form collects CNIC/bank-account-shaped data, so nothing here should
+   ever be mistaken for a production-secure flow before real storage exists.
+   -------------------------------------------------------------------------- */
+.proto-banner{
+  background: rgba(212,175,55,0.1);
+  border-bottom: 1px solid var(--gold-line);
+  color: var(--ink-dim);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-align: center;
+  padding: 10px 20px;
+  position: relative;
+  z-index: 50;
+}
+.proto-banner b{ color: var(--gold); font-weight: 600; }
+
+/* --------------------------------------------------------------------------
+   Registration wizard shell
+   -------------------------------------------------------------------------- */
+.reg-shell{
+  max-width: 760px;
+  margin: 0 auto;
+}
+.reg-progress{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--gap-lg);
+  position: relative;
+}
+.reg-progress::before{
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: var(--panel-line);
+  z-index: 0;
+}
+.reg-progress-step{
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+.reg-progress-num{
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-line);
+  background: var(--void);
+  color: var(--ink-faint);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  transition: border-color .3s, color .3s, background .3s;
+}
+.reg-progress-label{
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint);
+  text-align: center;
+}
+.reg-progress-step.is-active .reg-progress-num{
+  border-color: var(--gold);
+  color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-wash);
+}
+.reg-progress-step.is-active .reg-progress-label{ color: var(--ink); }
+.reg-progress-step.is-done .reg-progress-num{
+  border-color: var(--gold-dim);
+  background: var(--gold-dim);
+  color: #0d0b06;
+}
+.reg-progress-step.is-done .reg-progress-label{ color: var(--ink-dim); }
+
+.reg-panel{
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  padding: 40px;
+}
+.reg-step{ display: none; }
+.reg-step.is-active{
+  display: block;
+  animation: reg-step-in .35s var(--ease);
+}
+@keyframes reg-step-in{
+  from{ opacity: 0; transform: translateY(10px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce){ .reg-step.is-active{ animation: none; } }
+
+.reg-step h2{ font-size: 1.4rem; margin-bottom: 6px; }
+.reg-step-desc{ font-size: 0.9rem; color: var(--ink-dim); margin-bottom: 28px; }
+
+.reg-actions{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--panel-line);
+}
+.reg-actions .btn:only-child{ margin-left: auto; }
+
+/* --------------------------------------------------------------------------
+   Field validation states (layered on top of main.css's .form-field)
+   -------------------------------------------------------------------------- */
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea{
+  border-color: var(--down);
+}
+.field-error{
+  font-size: 0.78rem;
+  color: var(--down);
+  display: none;
+}
+.form-field.has-error .field-error{ display: block; }
+.form-field .hint{ font-size: 0.78rem; color: var(--ink-faint); }
+
+.radio-row{ display: flex; gap: 20px; }
+.radio-option{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.92rem;
+  color: var(--ink-dim);
+  cursor: pointer;
+}
+.radio-option input{ accent-color: var(--gold); width: 16px; height: 16px; }
+
+/* --------------------------------------------------------------------------
+   File upload dropzone
+   -------------------------------------------------------------------------- */
+.upload-field{ display: flex; flex-direction: column; gap: 8px; }
+.upload-box{
+  position: relative;
+  border: 1px dashed var(--panel-line);
+  border-radius: 4px;
+  padding: 22px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color .25s, background .25s;
+}
+.upload-box:hover, .upload-box:focus-within{
+  border-color: var(--gold-dim);
+  background: var(--gold-wash);
+}
+.upload-box input[type="file"]{
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.upload-icon{
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--panel-raised);
+  color: var(--gold);
+  display: grid;
+  place-items: center;
+}
+.upload-icon svg{ width: 18px; height: 18px; }
+.upload-text b{ display: block; color: var(--ink); font-size: 0.9rem; margin-bottom: 2px; }
+.upload-text span{ font-size: 0.78rem; color: var(--ink-faint); }
+.upload-box.has-file{ border-style: solid; border-color: var(--gold-dim); }
+.upload-box.has-file .upload-icon{ background: var(--gold); color: #0d0b06; }
+.upload-preview{
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--up);
+  display: none;
+  align-items: center;
+  gap: 6px;
+}
+.upload-field.has-file .upload-preview{ display: flex; }
+
+/* --------------------------------------------------------------------------
+   Review step summary
+   -------------------------------------------------------------------------- */
+.review-group{ margin-bottom: 24px; }
+.review-group h4{
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gold-dim);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--panel-line);
+}
+.review-list{ list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; }
+.review-list li{ display: flex; justify-content: space-between; gap: 12px; font-size: 0.88rem; }
+.review-list li span:first-child{ color: var(--ink-faint); }
+.review-list li span:last-child{ color: var(--ink); text-align: right; word-break: break-word; }
+
+.consent-row{
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+  background: var(--panel-raised);
+  border-radius: 4px;
+  margin: 24px 0;
+}
+.consent-row input{ accent-color: var(--gold); width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; }
+.consent-row label{ font-size: 0.85rem; color: var(--ink-dim); }
+
+/* --------------------------------------------------------------------------
+   Success modal
+   -------------------------------------------------------------------------- */
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  background: rgba(5,5,5,0.82);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-overlay.is-open{ display: flex; animation: modal-fade-in .3s var(--ease); }
+@keyframes modal-fade-in{ from{ opacity: 0; } to{ opacity: 1; } }
+
+.success-modal{
+  max-width: 440px;
+  width: 100%;
+  background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+  border: 1px solid var(--gold-line);
+  border-radius: 10px;
+  padding: 44px 36px;
+  text-align: center;
+  box-shadow: 0 40px 100px -30px rgba(0,0,0,0.8);
+  animation: modal-pop-in .4s var(--ease);
+}
+@media (prefers-reduced-motion: reduce){
+  .modal-overlay.is-open, .success-modal{ animation: none; }
+}
+@keyframes modal-pop-in{
+  from{ opacity: 0; transform: translateY(16px) scale(0.97); }
+  to{ opacity: 1; transform: translateY(0) scale(1); }
+}
+.success-modal-icon{
+  width: 64px; height: 64px;
+  margin: 0 auto 22px;
+  border-radius: 50%;
+  background: var(--gold-wash);
+  border: 1px solid var(--gold-line);
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+}
+.success-modal-icon svg{ width: 30px; height: 30px; }
+.success-modal h3{ font-size: 1.4rem; margin-bottom: 12px; }
+.success-modal p{ font-size: 0.92rem; margin-bottom: 6px; }
+.success-modal .brand-line{ color: var(--gold); font-weight: 600; }
+.success-modal-redirect{
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--panel-line);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-faint);
+}
+.success-modal-redirect b{ color: var(--gold); }
+.success-modal .btn{ margin-top: 20px; width: 100%; }
+
+/* --------------------------------------------------------------------------
+   Client dashboard
+   -------------------------------------------------------------------------- */
+.dash-shell{
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--gap-xl);
+  align-items: start;
+}
+.dash-nav{
+  position: sticky;
+  top: 120px;
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  gap: 4px;
+}
+.dash-nav button{
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-dim);
+  cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.dash-nav button:hover{ background: var(--panel-raised); color: var(--ink); }
+.dash-nav button.is-active{ background: var(--gold-wash); color: var(--gold); font-weight: 600; }
+
+.dash-panel{ display: none; }
+.dash-panel.is-active{ display: block; animation: reg-step-in .35s var(--ease); }
+
+.dash-card{
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 24px;
+}
+.dash-card h3{ font-size: 1.1rem; margin-bottom: 20px; }
+
+.profile-grid{ list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.profile-grid li{
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--panel-line);
+  font-size: 0.92rem;
+}
+.profile-grid li:last-child{ border-bottom: none; padding-bottom: 0; }
+.profile-grid li span:first-child{ color: var(--ink-faint); }
+.profile-grid li span:last-child{ color: var(--ink); text-align: right; }
+
+.status-badge{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--gold-wash);
+  color: var(--gold);
+  border: 1px solid var(--gold-line);
+}
+
+.verify-tracker{ display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 8px 0 4px; }
+.verify-tracker::before{
+  content: "";
+  position: absolute;
+  top: 17px; left: 8%; right: 8%;
+  height: 1px;
+  background: var(--panel-line);
+}
+.verify-step{ position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.verify-step .dot{
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--void);
+  border: 1px solid var(--panel-line);
+  color: var(--ink-faint);
+  display: grid;
+  place-items: center;
+}
+.verify-step .dot svg{ width: 16px; height: 16px; }
+.verify-step span{ font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); }
+.verify-step.is-complete .dot{ background: var(--up); border-color: var(--up); color: #0d1a12; }
+.verify-step.is-complete span{ color: var(--ink-dim); }
+.verify-step.is-current .dot{ border-color: var(--gold); color: var(--gold); box-shadow: 0 0 0 3px var(--gold-wash); }
+.verify-step.is-current span{ color: var(--gold); }
+
+.doc-list{ list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.doc-item{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  background: var(--panel-raised);
+  border-radius: 4px;
+}
+.doc-item-name{ display: flex; align-items: center; gap: 12px; font-size: 0.9rem; color: var(--ink); overflow: hidden; }
+.doc-item-name svg{ flex-shrink: 0; width: 20px; height: 20px; color: var(--gold-dim); }
+.doc-item-name b{ display: block; font-size: 0.9rem; }
+.doc-item-name small{ display: block; color: var(--ink-faint); font-size: 0.75rem; }
+.doc-item .btn{ flex-shrink: 0; }
+
+.dash-empty{
+  text-align: center;
+  padding: 80px 24px;
+}
+.dash-empty svg{ width: 48px; height: 48px; color: var(--gold-dim); margin: 0 auto 20px; }
+.dash-empty h3{ font-size: 1.3rem; margin-bottom: 10px; }
+.dash-empty p{ max-width: 40ch; margin: 0 auto 24px; }
+
+.save-note{
+  font-size: 0.82rem;
+  color: var(--up);
+  opacity: 0;
+  transition: opacity .3s;
+}
+.save-note.is-visible{ opacity: 1; }
+
+/* --------------------------------------------------------------------------
+   Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 900px){
+  .dash-shell{ grid-template-columns: 1fr; }
+  .dash-nav{ position: static; display: flex; overflow-x: auto; gap: 6px; }
+  .dash-nav button{ white-space: nowrap; }
+  .review-list{ grid-template-columns: 1fr; }
+}
+@media (max-width: 640px){
+  .reg-panel{ padding: 24px; }
+  .reg-progress-label{ display: none; }
+  .upload-box{ flex-direction: column; text-align: center; }
+}

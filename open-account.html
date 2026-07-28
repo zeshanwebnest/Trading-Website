@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open an Account — Vault Easy</title>
+<meta name="description" content="Open a Vault Easy trading account — personal details, identity verification, KYC profile and bank details in one guided form.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="stylesheet" href="assets/css/whatsapp-button.css">
+<link rel="stylesheet" href="assets/css/account.css">
+</head>
+<body>
+
+<nav class="nav" aria-label="Primary">
+  <div class="container">
+    <a class="brand" href="index.html"><img src="assets/images/vault-easy-logo.png" alt="Vault Easy" class="brand-logo"></a>
+    <input type="checkbox" id="nav-check" class="nav-check" aria-label="Toggle menu">
+    <ul class="nav-links">
+      <li><a href="about.html">About</a></li>
+      <li><a href="services.html">Services</a></li>
+      <li><a href="markets.html">Markets</a></li>
+      <li><a href="platforms.html">Platforms</a></li>
+      <li><a href="accounts.html">Accounts</a></li>
+      <li><a href="faq.html">FAQ</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <a href="dashboard.html" class="btn btn-ghost btn-sm">Client Portal</a>
+      <a href="open-account.html" class="btn btn-gold btn-sm">Open Account</a>
+    </div>
+    <label for="nav-check" class="nav-toggle btn-ghost btn-sm" aria-hidden="true"></label>
+  </div>
+</nav>
+
+<div class="proto-banner">Design prototype — this form is <b>not yet connected to a live backend</b>. Submitted data is stored only in this browser for preview purposes.</div>
+
+<header class="page-header">
+  <div class="container platform-wrap">
+    <div class="reveal">
+      <div class="page-header-crumb"><a href="index.html">Home</a> / Open Account</div>
+      <div class="eyebrow">Open an Account</div>
+      <h1>One guided form, everything your account needs.</h1>
+      <p>Personal details, identity verification, your KYC profile and bank details — five short steps, saved as you go.</p>
+    </div>
+    <div class="about-media reveal">
+      <img src="assets/images/stock/accounts-hero.jpg" alt="Professional completing account setup" loading="lazy">
+    </div>
+  </div>
+</header>
+
+<section class="section-pad">
+  <div class="container">
+    <div class="reg-shell">
+      <div class="reg-progress">
+        <div class="reg-progress-step" data-step="0"><div class="reg-progress-num">1</div><div class="reg-progress-label">Personal</div></div>
+        <div class="reg-progress-step" data-step="1"><div class="reg-progress-num">2</div><div class="reg-progress-label">Identity</div></div>
+        <div class="reg-progress-step" data-step="2"><div class="reg-progress-num">3</div><div class="reg-progress-label">KYC Profile</div></div>
+        <div class="reg-progress-step" data-step="3"><div class="reg-progress-num">4</div><div class="reg-progress-label">Bank Details</div></div>
+        <div class="reg-progress-step" data-step="4"><div class="reg-progress-num">5</div><div class="reg-progress-label">Review</div></div>
+      </div>
+
+      <form class="reg-panel" id="reg-form" novalidate>
+
+        <!-- Step 1: Personal information -->
+        <div class="reg-step is-active" data-step="0">
+          <h2>Personal information</h2>
+          <p class="reg-step-desc">Tell us who you are. This must match the name on your identity document.</p>
+          <div class="form-grid">
+            <div class="form-field is-full">
+              <label for="fullName">Full legal name</label>
+              <input type="text" id="fullName" placeholder="As shown on your CNIC">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="email">Email address</label>
+              <input type="email" id="email" placeholder="you@example.com">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="phone">Phone number</label>
+              <input type="tel" id="phone" placeholder="+92 300 1234567">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="dob">Date of birth</label>
+              <input type="date" id="dob">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="nationality">Nationality</label>
+              <input type="text" id="nationality" placeholder="e.g. Pakistani">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field is-full">
+              <label for="addrStreet">Street address</label>
+              <input type="text" id="addrStreet" placeholder="House / street / area">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="addrCity">City</label>
+              <input type="text" id="addrCity" placeholder="City">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="addrCountry">Country</label>
+              <select id="addrCountry">
+                <option value="">Select country</option>
+                <option>Pakistan</option>
+                <option>United Arab Emirates</option>
+                <option>Saudi Arabia</option>
+                <option>United Kingdom</option>
+                <option>United States</option>
+                <option>Other</option>
+              </select>
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="addrPostal">Postal code <span class="hint">(optional)</span></label>
+              <input type="text" id="addrPostal" placeholder="Postal / ZIP code">
+            </div>
+          </div>
+          <div class="reg-actions"><button type="button" class="btn btn-gold" data-action="next">Continue</button></div>
+        </div>
+
+        <!-- Step 2: Identity verification -->
+        <div class="reg-step" data-step="1">
+          <h2>Identity verification</h2>
+          <p class="reg-step-desc">We verify identity using your CNIC, in line with standard KYC requirements for a regulated brokerage.</p>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="cnicNumber">CNIC number</label>
+              <input type="text" id="cnicNumber" placeholder="12345-1234567-1" inputmode="numeric" maxlength="15">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="cnicExpiry">CNIC expiry date</label>
+              <input type="date" id="cnicExpiry">
+              <span class="field-error"></span>
+            </div>
+            <div class="upload-field form-field is-full">
+              <label>CNIC — front side</label>
+              <div class="upload-box">
+                <input type="file" id="cnicFront" accept="image/*">
+                <span class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg></span>
+                <span class="upload-text"><b>Upload front of CNIC</b><span>JPG or PNG, up to 5MB</span></span>
+              </div>
+              <span class="upload-preview">✓ <span></span></span>
+              <span class="field-error"></span>
+            </div>
+            <div class="upload-field form-field is-full">
+              <label>CNIC — back side</label>
+              <div class="upload-box">
+                <input type="file" id="cnicBack" accept="image/*">
+                <span class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg></span>
+                <span class="upload-text"><b>Upload back of CNIC</b><span>JPG or PNG, up to 5MB</span></span>
+              </div>
+              <span class="upload-preview">✓ <span></span></span>
+              <span class="field-error"></span>
+            </div>
+          </div>
+          <div class="reg-actions">
+            <button type="button" class="btn btn-ghost" data-action="back">Back</button>
+            <button type="button" class="btn btn-gold" data-action="next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3: KYC profile -->
+        <div class="reg-step" data-step="2">
+          <h2>KYC profile</h2>
+          <p class="reg-step-desc">A few questions about your financial background, required for account approval.</p>
+          <div class="form-grid">
+            <div class="form-field is-full">
+              <label for="occupation">Occupation</label>
+              <input type="text" id="occupation" placeholder="Your current occupation">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="sourceOfFunds">Source of funds</label>
+              <select id="sourceOfFunds">
+                <option value="">Select an option</option>
+                <option>Salary / employment income</option>
+                <option>Business income</option>
+                <option>Personal savings</option>
+                <option>Investments</option>
+                <option>Other</option>
+              </select>
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="annualIncome">Estimated annual income</label>
+              <select id="annualIncome">
+                <option value="">Select a range</option>
+                <option>Under $10,000</option>
+                <option>$10,000 – $50,000</option>
+                <option>$50,000 – $150,000</option>
+                <option>$150,000+</option>
+              </select>
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field is-full">
+              <label for="tradingExperience">Trading experience</label>
+              <select id="tradingExperience">
+                <option value="">Select an option</option>
+                <option>None</option>
+                <option>Beginner (under 1 year)</option>
+                <option>Intermediate (1–3 years)</option>
+                <option>Advanced (3+ years)</option>
+              </select>
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field is-full" data-radio-group="pep">
+              <label>Are you a Politically Exposed Person (PEP)?</label>
+              <div class="radio-row">
+                <label class="radio-option"><input type="radio" name="pep" value="yes"> Yes</label>
+                <label class="radio-option"><input type="radio" name="pep" value="no"> No</label>
+              </div>
+              <span class="field-error">Please answer this question.</span>
+            </div>
+          </div>
+          <div class="reg-actions">
+            <button type="button" class="btn btn-ghost" data-action="back">Back</button>
+            <button type="button" class="btn btn-gold" data-action="next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 4: Bank details -->
+        <div class="reg-step" data-step="3">
+          <h2>Bank account details</h2>
+          <p class="reg-step-desc">Used for deposits and withdrawals once your account is verified.</p>
+          <div class="form-grid">
+            <div class="form-field is-full">
+              <label for="bankName">Bank name</label>
+              <input type="text" id="bankName" placeholder="e.g. Habib Bank Limited">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field is-full">
+              <label for="accountTitle">Account title</label>
+              <input type="text" id="accountTitle" placeholder="Name on the account">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="accountNumber">Account number / IBAN</label>
+              <input type="text" id="accountNumber" placeholder="Account number or IBAN">
+              <span class="field-error"></span>
+            </div>
+            <div class="form-field">
+              <label for="swiftCode">SWIFT / branch code <span class="hint">(optional)</span></label>
+              <input type="text" id="swiftCode" placeholder="SWIFT or branch code">
+            </div>
+          </div>
+          <div class="reg-actions">
+            <button type="button" class="btn btn-ghost" data-action="back">Back</button>
+            <button type="button" class="btn btn-gold" data-action="next">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 5: Documents + review -->
+        <div class="reg-step" data-step="4">
+          <h2>Documents &amp; review</h2>
+          <p class="reg-step-desc">One last document, then check everything looks right before you submit.</p>
+          <div class="form-grid">
+            <div class="upload-field form-field is-full">
+              <label>Proof of address</label>
+              <div class="upload-box">
+                <input type="file" id="proofOfAddress" accept="image/*,.pdf">
+                <span class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg></span>
+                <span class="upload-text"><b>Upload a recent utility bill or bank statement</b><span>JPG, PNG or PDF, up to 5MB</span></span>
+              </div>
+              <span class="upload-preview">✓ <span></span></span>
+              <span class="field-error"></span>
+            </div>
+            <div class="upload-field form-field is-full">
+              <label>Additional document <span class="hint">(optional)</span></label>
+              <div class="upload-box">
+                <input type="file" id="additionalDoc" accept="image/*,.pdf">
+                <span class="upload-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg></span>
+                <span class="upload-text"><b>Any other supporting document</b><span>JPG, PNG or PDF, up to 5MB</span></span>
+              </div>
+              <span class="upload-preview">✓ <span></span></span>
+            </div>
+          </div>
+
+          <div class="review-group">
+            <h4>Personal information</h4>
+            <ul class="review-list" id="review-personal"></ul>
+          </div>
+          <div class="review-group">
+            <h4>Identity verification</h4>
+            <ul class="review-list" id="review-identity"></ul>
+          </div>
+          <div class="review-group">
+            <h4>KYC profile</h4>
+            <ul class="review-list" id="review-kyc"></ul>
+          </div>
+          <div class="review-group">
+            <h4>Bank details</h4>
+            <ul class="review-list" id="review-bank"></ul>
+          </div>
+          <div class="review-group">
+            <h4>Documents</h4>
+            <ul class="review-list" id="review-docs"></ul>
+          </div>
+
+          <div class="consent-row">
+            <input type="checkbox" id="consentCheck">
+            <label for="consentCheck">I confirm the information provided is accurate and complete, and I consent to Vault Easy processing this data for identity verification and compliance purposes.</label>
+          </div>
+
+          <div class="reg-actions">
+            <button type="button" class="btn btn-ghost" data-action="back">Back</button>
+            <button type="submit" class="btn btn-gold">Create Account</button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="modal-overlay" id="success-modal">
+  <div class="success-modal">
+    <div class="success-modal-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 6L9 17l-5-5"/></svg></div>
+    <h3>Account created successfully</h3>
+    <p class="brand-line">Vault Easy</p>
+    <p>Your account has been created and is now pending verification. Our team will review your documents shortly.</p>
+    <div class="success-modal-redirect">
+      Redirecting you to download the VaultEasy Mobile Trading app in <b><span id="redirect-countdown">4</span>s</b>…
+    </div>
+    <a href="https://www.hybridsolutions.com/downloads/Mobile/VertexFXTraderPro.apk" class="btn btn-gold">Download Now</a>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="brand" href="index.html"><img src="assets/images/vault-easy-logo.png" alt="Vault Easy" class="brand-logo"></a>
+        <p>Vault Easy is a Panama-incorporated forex and CFD brokerage offering one account for spot forex, CFD futures and CFD shares — swap-free on forex.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 11-.02 5 2.5 2.5 0 01.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.6c0-1.34-.02-3.06-1.87-3.06-1.87 0-2.16 1.46-2.16 2.96V21H9z"/></svg></a>
+          <a href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23 22h-6.9l-5.4-6.7L4.5 22H1.4l8.1-9.3L1 2h7l4.9 6.2z"/></svg></a>
+          <a href="#" aria-label="Telegram"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M21 4L2.5 11.3c-1 .4-1 1.7.1 2l4.6 1.5 1.8 5.6c.3.9 1.4 1.1 2 .4l2.6-2.7 4.9 3.6c.8.6 2 .2 2.2-.8L23 5.2c.2-1-.8-1.7-2-1.2zM8.6 14.3l8.6-6.9c.3-.2.6.2.3.4l-7 6.6-.3 3.4z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Careers</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Trading</h5>
+        <ul>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="markets.html">Markets</a></li>
+          <li><a href="platforms.html">Platforms</a></li>
+          <li><a href="accounts.html">Account Types</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Resources</h5>
+        <ul>
+          <li><a href="faq.html">FAQ</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <ul>
+          <li><a href="#">Risk Disclosure</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Business</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-risk">
+      Risk warning: Trading forex, CFDs and commodities on margin carries a high level of risk and may not be suitable for all investors. You could sustain a loss of some or all of your invested capital. Prior to opening an account, please ensure you fully understand the risks involved. This site is a design prototype and does not constitute a real financial services offering.
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Vault Easy. All rights reserved.</span>
+      <ul class="footer-bottom-links">
+        <li><a href="#">Privacy</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Cookies</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<a
+  href="https://wa.me/923214936776"
+  class="wa-float"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Chat with us on WhatsApp"
+  title="Chat with us on WhatsApp"
+>
+  <span class="wa-float__pulse" aria-hidden="true"></span>
+  <svg class="wa-float__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+    <path d="M16.004 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.258.594 4.457 1.723 6.39L3.2 28.8l6.59-1.688a12.74 12.74 0 0 0 6.214 1.61h.006c7.06 0 12.8-5.74 12.8-12.8 0-3.42-1.332-6.635-3.75-9.05a12.72 12.72 0 0 0-9.056-3.672zm0 23.42h-.005a10.62 10.62 0 0 1-5.41-1.482l-.388-.23-3.91 1.002 1.045-3.812-.253-.39a10.6 10.6 0 0 1-1.63-5.71c0-5.87 4.777-10.646 10.656-10.646a10.6 10.6 0 0 1 7.54 3.116 10.58 10.58 0 0 1 3.122 7.536c0 5.872-4.778 10.648-10.657 10.648zm5.842-7.977c-.32-.16-1.9-.937-2.194-1.044-.294-.107-.508-.16-.722.16-.213.32-.827 1.043-1.014 1.257-.187.213-.373.24-.693.08-.32-.16-1.352-.498-2.575-1.588-.952-.848-1.594-1.895-1.782-2.215-.187-.32-.02-.492.14-.652.144-.143.32-.373.48-.56.16-.187.213-.32.32-.533.107-.214.053-.4-.027-.56-.08-.16-.722-1.74-.99-2.383-.26-.626-.526-.54-.722-.55l-.615-.01c-.213 0-.56.08-.853.4-.293.32-1.12 1.095-1.12 2.67 0 1.573 1.147 3.093 1.307 3.307.16.213 2.257 3.446 5.467 4.833.764.33 1.36.527 1.825.674.767.244 1.465.21 2.017.127.615-.092 1.9-.777 2.168-1.527.267-.75.267-1.393.187-1.527-.08-.133-.293-.213-.613-.373z"/>
+  </svg>
+</a>
+
+<script src="assets/js/main.js"></script>
+<script src="assets/js/account.js"></script>
+</body>
+</html>

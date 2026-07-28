@@ -3,13 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Markets — Vault Easy</title>
-<meta name="description" content="Trade forex, indices, metals, commodities, share CFDs and digital assets through Vault Easy's institutional liquidity network.">
+<title>Client Dashboard — Vault Easy</title>
+<meta name="description" content="Vault Easy client dashboard — view your profile, track verification status, and manage your documents.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="stylesheet" href="assets/css/whatsapp-button.css">
+<link rel="stylesheet" href="assets/css/account.css">
 </head>
 <body>
 
@@ -34,77 +35,120 @@
   </div>
 </nav>
 
+<div class="proto-banner">Design prototype — this dashboard reads data saved locally by the <b>Open Account</b> form. No real login or backend exists yet.</div>
+
 <header class="page-header">
-  <div class="container platform-wrap">
+  <div class="container">
     <div class="reveal">
-      <div class="page-header-crumb"><a href="index.html">Home</a> / Markets</div>
-      <div class="eyebrow">Markets</div>
-      <h1>Three markets. One all-in-one account.</h1>
-      <p>Spot forex, CFD futures and CFD shares sit inside a single account — the same infrastructure regardless of which market you trade.</p>
-    </div>
-    <div class="about-media reveal">
-      <img src="assets/images/stock/markets-hero.jpg" alt="Multiple monitors displaying live market charts" loading="lazy">
+      <div class="page-header-crumb"><a href="index.html">Home</a> / Client Dashboard</div>
+      <div class="eyebrow">Client Dashboard</div>
+      <h1>Your account, at a glance.</h1>
     </div>
   </div>
 </header>
 
 <section class="section-pad">
   <div class="container">
-    <div class="instruments-grid cols-3">
-      <div class="detail-card reveal">
-        <h3>Spot Forex</h3>
-        <p>Major, minor and exotic currency pairs, traded swap-free.</p>
-        <div class="tag-row"><span>EUR/USD</span><span>GBP/USD</span><span>USD/JPY</span><span>AUD/USD</span></div>
-        <div class="detail-card-foot"><span>Commission</span><b>None</b></div>
-      </div>
-      <div class="detail-card reveal">
-        <h3>CFD Futures</h3>
-        <p>Indices, metals and commodity CFDs, managed under the same execution and custody model as forex.</p>
-        <div class="tag-row"><span>US500</span><span>XAU/USD</span><span>WTI Crude</span></div>
-        <div class="detail-card-foot"><span>Leverage up to</span><b>200:1</b></div>
-      </div>
-      <div class="detail-card reveal">
-        <h3>CFD Shares</h3>
-        <p>Global equity CFDs, giving you exposure to individual companies without holding the underlying shares.</p>
-        <div class="tag-row"><span>AAPL</span><span>TSLA</span><span>MSFT</span><span>AMZN</span></div>
-        <div class="detail-card-foot"><span>Account</span><b>All-in-one</b></div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="section-pad">
-  <div class="container">
-    <div class="section-head reveal">
-      <div class="eyebrow">Market Hours</div>
-      <h2>Four sessions, one continuous trading week.</h2>
-      <p>Times shown in UTC. Liquidity and spreads tighten materially during session overlaps.</p>
+    <div class="dash-empty" id="dash-empty-state" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+      <h3>No account found on this device</h3>
+      <p>Open an account first — your submitted details will then appear here.</p>
+      <a href="open-account.html" class="btn btn-gold">Open an Account</a>
     </div>
-    <div class="table-scroll session-table-wrap reveal">
-      <table class="compare">
-        <thead>
-          <tr><th scope="col">Session</th><th scope="col">Opens</th><th scope="col">Closes</th><th scope="col">Notes</th></tr>
-        </thead>
-        <tbody>
-          <tr><th scope="row">Sydney</th><td>22:00</td><td>07:00</td><td>Opens the trading week</td></tr>
-          <tr><th scope="row">Tokyo</th><td>00:00</td><td>09:00</td><td>Overlaps Sydney close</td></tr>
-          <tr><th scope="row">London</th><td>08:00</td><td>17:00</td><td>Highest EUR/GBP liquidity</td></tr>
-          <tr><th scope="row">New York</th><td>13:00</td><td>22:00</td><td>Overlaps London — peak daily volume</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
 
-<section class="section-pad">
-  <div class="container">
-    <div class="cta-band reveal">
+    <div class="dash-shell" id="dash-content">
+      <nav class="dash-nav">
+        <button type="button" class="is-active" data-panel="panel-overview">Profile Overview</button>
+        <button type="button" data-panel="panel-verification">Verification Status</button>
+        <button type="button" data-panel="panel-documents">Documents</button>
+        <button type="button" data-panel="panel-edit">Edit Profile</button>
+      </nav>
+
       <div>
-        <h3>See live pricing on every instrument.</h3>
-        <p>Open a free demo account and stream real quotes before you commit capital.</p>
+        <div class="dash-panel is-active" id="panel-overview">
+          <div class="dash-card">
+            <h3>Profile overview</h3>
+            <ul class="profile-grid" id="profile-overview-list"></ul>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="panel-verification">
+          <div class="dash-card">
+            <h3>Verification status <span class="status-badge" id="status-badge">Submitted</span></h3>
+            <div class="verify-tracker">
+              <div class="verify-step is-complete">
+                <div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+                <span>Submitted</span>
+              </div>
+              <div class="verify-step is-current">
+                <div class="dot">2</div>
+                <span>Under Review</span>
+              </div>
+              <div class="verify-step">
+                <div class="dot">3</div>
+                <span>Verified</span>
+              </div>
+            </div>
+            <p style="margin-top:28px;">Our compliance team typically reviews new accounts within 1 business day. You'll be notified by email once your account is verified.</p>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="panel-documents">
+          <div class="dash-card">
+            <h3>Your documents</h3>
+            <ul class="doc-list" id="doc-list"></ul>
+          </div>
+        </div>
+
+        <div class="dash-panel" id="panel-edit">
+          <div class="dash-card">
+            <h3>Edit profile</h3>
+            <form id="edit-profile-form">
+              <div class="form-grid">
+                <div class="form-field is-full">
+                  <label for="edit-fullName">Full legal name</label>
+                  <input type="text" id="edit-fullName">
+                </div>
+                <div class="form-field">
+                  <label for="edit-email">Email address</label>
+                  <input type="email" id="edit-email">
+                </div>
+                <div class="form-field">
+                  <label for="edit-phone">Phone number</label>
+                  <input type="tel" id="edit-phone">
+                </div>
+                <div class="form-field">
+                  <label for="edit-dob">Date of birth</label>
+                  <input type="date" id="edit-dob">
+                </div>
+                <div class="form-field">
+                  <label for="edit-nationality">Nationality</label>
+                  <input type="text" id="edit-nationality">
+                </div>
+                <div class="form-field is-full">
+                  <label for="edit-addrStreet">Street address</label>
+                  <input type="text" id="edit-addrStreet">
+                </div>
+                <div class="form-field">
+                  <label for="edit-addrCity">City</label>
+                  <input type="text" id="edit-addrCity">
+                </div>
+                <div class="form-field">
+                  <label for="edit-addrPostal">Postal code</label>
+                  <input type="text" id="edit-addrPostal">
+                </div>
+              </div>
+              <div class="reg-actions">
+                <span class="save-note" id="edit-save-note">✓ Changes saved</span>
+                <button type="submit" class="btn btn-gold">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
-      <a href="open-account.html" class="btn btn-gold">Open Demo Account</a>
     </div>
+
   </div>
 </section>
 
@@ -181,5 +225,6 @@
 </a>
 
 <script src="assets/js/main.js"></script>
+<script src="assets/js/account.js"></script>
 </body>
 </html>
