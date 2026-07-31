@@ -99,7 +99,6 @@ section{ position: relative; }
 }
 
 .section-head{
-  max-width: 640px;
   margin-bottom: var(--gap-lg);
 }
 .section-head h2{
